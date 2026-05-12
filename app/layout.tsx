@@ -30,10 +30,7 @@ export const metadata: Metadata = {
     title: "AeroCampo Iberia | Drones Agrícolas",
     description: "Servicios de drones agrícolas en Castilla y León.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 const schemaOrg = {
@@ -59,9 +56,7 @@ const schemaOrg = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
       <head>

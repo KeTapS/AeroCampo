@@ -1,144 +1,144 @@
 'use client';
 
-import Image from 'next/image';
-import { motion } from 'framer-motion';
 import FadeIn from '@/components/ui/FadeIn';
-import CountUp from '@/components/ui/CountUp';
 
-const SPECS = [
-  { icon: '📡', label: 'Sensor multiespectral',  val: '5 bandas'   },
-  { icon: '🗺️', label: 'Resolución de mapa',     val: '3 cm/px'    },
-  { icon: '⚡', label: 'Área por vuelo',          val: '50+ ha'     },
-  { icon: '📊', label: 'Índice NDVI en tiempo real', val: 'Live'    },
+const LAYERS = [
+  { code: 'NDVI', label: 'Vigor vegetativo',   color: 'var(--accent)',   pct: 78 },
+  { code: 'NDRE', label: 'Estrés nitrogenado', color: 'var(--accent-2)', pct: 52 },
+  { code: 'NDWI', label: 'Estrés hídrico',     color: '#7fc9d8',         pct: 34 },
+  { code: 'TERM', label: 'Termal · plagas',    color: '#e58f5a',         pct: 18 },
 ];
 
-const INSIGHTS = [
-  { color: '#e74c3c', label: 'Estrés hídrico severo'  },
-  { color: '#e67e22', label: 'Estrés moderado'        },
-  { color: '#f1c40f', label: 'Desarrollo normal'      },
-  { color: '#2ecc71', label: 'Óptimo'                 },
-  { color: '#1B5E20', label: 'Exceso de humedad'      },
+const ANNOTATIONS = [
+  { x: 22, y: 38, lbl: 'NDVI · 0.32', sub: 'baja vigorosidad' },
+  { x: 64, y: 60, lbl: 'NDRE · 0.18', sub: 'déficit N' },
+  { x: 48, y: 22, lbl: 'TERM · +3.2°C', sub: 'foco plaga' },
 ];
 
 export default function MonitoringSection() {
   return (
-    <section id="monitorizacion" style={{ padding: '7rem 1.5rem', background: '#0d1117', overflow: 'hidden', position: 'relative' }}>
+    <section
+      id="monitorizacion"
+      data-drone-target="monitoring"
+      className="section-pad"
+      style={{ background: 'var(--bg-alt)' }}
+    >
+      <div className="grid-bg" style={{ opacity: 0.35 }} />
+      <div className="wrap" style={{ position: 'relative' }}>
 
-      {/* Background glow */}
-      <div style={{ position: 'absolute', top: '-200px', left: '-200px', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,172,193,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-100px', right: '-100px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,179,66,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-      <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-
-        {/* Header */}
-        <FadeIn style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <span style={{ display: 'inline-block', background: 'rgba(0,172,193,0.15)', border: '1px solid rgba(0,172,193,0.3)', color: '#4dd6e8', borderRadius: '50px', padding: '0.3rem 1rem', fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem', fontFamily: 'Poppins, sans-serif' }}>
-            Tecnología avanzada
-          </span>
-          <h2 style={{ color: 'white', fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', fontWeight: '800', letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif', maxWidth: '640px', margin: '0 auto' }}>
-            Monitorización de Cultivos
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'clamp(0.9rem, 1.8vw, 1.05rem)', lineHeight: 1.7, maxWidth: '520px', margin: '0.75rem auto 0', fontFamily: 'Inter, sans-serif' }}>
-            Detectamos problemas antes de que sean visibles al ojo humano. Mapas de salud vegetal,
-            estrés hídrico y análisis NDVI en tiempo real.
+        <FadeIn className="section-head">
+          <div>
+            <span className="eyebrow"><span className="num">04</span> MONITORIZACIÓN</span>
+            <h2 className="h-section" style={{ marginTop: 18 }}>
+              Ver el campo<br /><em>como nunca antes</em>
+            </h2>
+          </div>
+          <p className="lede">
+            Capturamos imágenes multiespectrales y termales que revelan lo que el ojo humano no puede ver: estrés
+            hídrico, plagas tempranas, deficiencias de nitrógeno. Diagnóstico zonal sobre cada parcela.
           </p>
         </FadeIn>
 
-        {/* Main split */}
-        <div className="mon-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2.5rem', alignItems: 'center', marginBottom: '3rem' }}>
+        <div className="mon-grid" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 36, alignItems: 'start' }}>
 
-          {/* Left: drone image */}
-          <FadeIn direction="left">
-            <div style={{ position: 'relative', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 24px 72px rgba(0,172,193,0.2)' }}>
-              <div style={{ position: 'relative', height: '400px' }}>
-                <Image src="/images/dron-camara.png" alt="Dron con cámara multiespectral" fill style={{ objectFit: 'cover', objectPosition: 'center' }} sizes="600px" />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,172,193,0.15) 0%, transparent 60%)' }} />
-                <div style={{ position: 'absolute', inset: 0, border: '1px solid rgba(0,172,193,0.2)', borderRadius: '20px' }} />
-              </div>
+          {/* NDVI image viewer */}
+          <FadeIn>
+            <div style={{
+              position: 'relative', borderRadius: 16, overflow: 'hidden',
+              border: '1px solid var(--border-2)', background: 'var(--bg-card)',
+              aspectRatio: '4 / 3',
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0,
+                backgroundImage: 'url(/images/ndvi.jpg)',
+                backgroundSize: 'cover', backgroundPosition: 'center',
+                filter: 'saturate(1.05) contrast(1.02)',
+              }} />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(180deg, color-mix(in oklch, var(--bg) 18%, transparent), transparent 30%, transparent 70%, color-mix(in oklch, var(--bg) 35%, transparent))',
+              }} />
 
-              {/* Floating spec chips */}
-              <div style={{ position: 'absolute', bottom: '1rem', left: '1rem', right: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {SPECS.map(spec => (
-                  <div key={spec.label} style={{ background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(10px)', border: '1px solid rgba(0,172,193,0.3)', borderRadius: '8px', padding: '0.4rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ fontSize: '0.85rem' }}>{spec.icon}</span>
-                    <div>
-                      <div style={{ color: '#4dd6e8', fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', lineHeight: 1 }}>{spec.label}</div>
-                      <div style={{ color: 'white', fontSize: '0.78rem', fontWeight: '700', fontFamily: 'Poppins, sans-serif' }}>{spec.val}</div>
-                    </div>
+              {/* Annotations */}
+              {ANNOTATIONS.map((a, i) => (
+                <div key={i} style={{
+                  position: 'absolute', left: `${a.x}%`, top: `${a.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                }}>
+                  <span style={{
+                    width: 12, height: 12, borderRadius: '50%',
+                    background: 'var(--accent)',
+                    boxShadow: '0 0 0 3px color-mix(in oklch, var(--accent) 40%, transparent)',
+                    flexShrink: 0,
+                  }} />
+                  <div style={{
+                    background: 'var(--bg)', border: '1px solid var(--border-2)',
+                    borderRadius: 6, padding: '6px 8px',
+                    fontFamily: 'var(--font-mono)', fontSize: 10.5, lineHeight: 1.3,
+                  }}>
+                    <b style={{ color: 'var(--accent)', fontWeight: 500 }}>{a.lbl}</b>
+                    <div style={{ color: 'var(--text-mut)' }}>{a.sub}</div>
                   </div>
-                ))}
+                </div>
+              ))}
+
+              <div className="readout" style={{
+                position: 'absolute', top: 14, left: 14,
+                background: 'color-mix(in oklch, var(--bg) 78%, transparent)',
+                padding: '6px 10px', borderRadius: 4,
+              }}>
+                <b>● CAPTURA</b> · sentinel-2 · ndvi 0.65
+              </div>
+              <div className="readout" style={{
+                position: 'absolute', bottom: 14, right: 14,
+                background: 'color-mix(in oklch, var(--bg) 78%, transparent)',
+                padding: '6px 10px', borderRadius: 4,
+              }}>
+                ALT 80 m · GSD 2.1 cm/px
               </div>
             </div>
           </FadeIn>
 
-          {/* Right: heatmap + analysis */}
-          <FadeIn direction="right" delay={0.1}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-              {/* Heatmap image */}
-              <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', height: '240px', boxShadow: '0 16px 48px rgba(0,0,0,0.4)' }}>
-                <Image src="/images/grafico.jpg" alt="Mapa NDVI de salud vegetal" fill style={{ objectFit: 'cover' }} sizes="600px" />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 60%, rgba(13,17,23,0.7))' }} />
-                {/* Corner label */}
-                <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', background: 'rgba(13,17,23,0.8)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,172,193,0.3)', borderRadius: '8px', padding: '0.35rem 0.75rem', color: '#4dd6e8', fontSize: '0.72rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif', letterSpacing: '0.05em' }}>
-                  NDVI · Índice de vegetación
-                </div>
-                {/* Legend */}
-                <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', right: '0.75rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                  {INSIGHTS.map(ins => (
-                    <div key={ins.label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: ins.color, flexShrink: 0 }} />
-                      <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.62rem', fontFamily: 'Inter, sans-serif' }}>{ins.label}</span>
+          {/* Spectral layer list */}
+          <FadeIn delay={120}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {LAYERS.map((l, i) => (
+                <article key={l.code} className="card" style={{ padding: 18 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <div>
+                      <span className="mono" style={{ fontSize: 11, color: 'var(--text-dim)', letterSpacing: '0.12em' }}>/ 0{i+1}</span>
+                      <h3 style={{ fontSize: 18, marginTop: 4, fontWeight: 500 }}>
+                        <span style={{ color: l.color, fontWeight: 700 }}>{l.code}</span>
+                        {' '}<span style={{ color: 'var(--text)' }}>· {l.label}</span>
+                      </h3>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <span className="mono" style={{ fontSize: 12, color: 'var(--text)' }}>{l.pct}%</span>
+                  </div>
+                  <div style={{ marginTop: 12, height: 4, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ width: `${l.pct}%`, height: '100%', background: l.color, boxShadow: `0 0 12px ${l.color}` }} />
+                  </div>
+                </article>
+              ))}
 
-              {/* Stats row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                {[
-                  { to: 95, suffix: '%', label: 'Precisión detección' },
-                  { to: 48, suffix: 'h', label: 'Informe listo en' },
-                  { to: 3,  suffix: 'cm', label: 'Resolución mapa' },
-                ].map((s, i) => (
-                  <motion.div key={s.label}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.45, delay: 0.3 + i * 0.1 }}
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
-                    <div style={{ color: '#4dd6e8', fontSize: '1.6rem', fontWeight: '800', fontFamily: 'Poppins, sans-serif' }}>
-                      <CountUp to={s.to} suffix={s.suffix} duration={2} />
-                    </div>
-                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', marginTop: '0.2rem', fontFamily: 'Inter, sans-serif' }}>{s.label}</div>
-                  </motion.div>
-                ))}
+              <div style={{
+                display: 'flex', gap: 10, marginTop: 4, padding: '14px 16px',
+                border: '1px dashed var(--border-2)', borderRadius: 12,
+                fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-mut)',
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+                </svg>
+                Entregamos informes con mapas, recomendaciones agronómicas
+                y rutas de tratamiento listas para el dron.
               </div>
-
-              {/* Description */}
-              <div style={{ background: 'rgba(0,172,193,0.08)', border: '1px solid rgba(0,172,193,0.2)', borderRadius: '12px', padding: '1.25rem' }}>
-                <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.875rem', lineHeight: 1.7, margin: 0, fontFamily: 'Inter, sans-serif' }}>
-                  Combinamos imágenes multiespectrales con análisis de datos para generar mapas de
-                  prescripción precisos. Identificamos zonas de estrés, enfermedades y carencias
-                  nutricionales <strong style={{ color: 'white' }}>antes de que sean visibles al ojo humano</strong>.
-                </p>
-              </div>
-
-              <motion.a href="#contacto" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'rgba(0,172,193,0.18)', border: '1.5px solid rgba(0,172,193,0.4)', color: '#4dd6e8', borderRadius: '50px', padding: '0.875rem 1.75rem', fontSize: '0.95rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif', textDecoration: 'none', transition: 'background 0.25s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,172,193,0.28)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,172,193,0.18)')}>
-                📡 Solicitar análisis de cultivo →
-              </motion.a>
             </div>
           </FadeIn>
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .mon-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
-        }
+        @media (max-width: 900px) { .mon-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </section>
   );

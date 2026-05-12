@@ -2,274 +2,255 @@
 
 import { useRef, useEffect, Suspense, Component, ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, Environment } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import gsap from 'gsap';
 
-// ── Base orientation (posición de reposo final) ──────────────────
-const BASE_RX =  0.1;
-const BASE_RY = Math.PI + 0.42;
-const BASE_RZ = -0.1;
-const FINAL_SCALE = 0.65;
+// ── Section-based landing poses ──────────────────────────────────────
+const SECTION_POSES = {
+  hero:        { x:  2.4, y:  0.2, rx:  0.05, ry: Math.PI + 0.42, rz: -0.05 },
+  services:    { x: -2.6, y: -0.6, rx:  0.05, ry: Math.PI + 0.85, rz:  0.04 },
+  advantages:  { x:  2.6, y: -0.2, rx:  0.04, ry: Math.PI + 0.10, rz: -0.04 },
+  monitoring:  { x: -1.4, y: -0.3, rx: -0.10, ry: Math.PI + 1.10, rz:  0.02 },
+  coverage:    { x:  2.4, y:  0.1, rx:  0.02, ry: Math.PI + 0.20, rz: -0.02 },
+  about:       { x: -2.4, y: -0.4, rx:  0.05, ry: Math.PI + 0.95, rz:  0.05 },
+  contact:     { x:  3.0, y: -1.6, rx:  0.10, ry: Math.PI + 0.30, rz:  0.00 },
+} as const;
+type SectionName = keyof typeof SECTION_POSES;
 
-// ── Scroll-linked keyframes ──────────────────────────────────────
-// 8 sections: Hero · Services · Advantages · Monitoring · Coverage · About · Trust · Contact
-const KF = [
-  { t: 0,    x:  4,    y: -3.0, z: 0, rx: 0,    ry:  0.0, rz:  0.00 },
-  { t: 0.13, x:  2.2,  y: -0.5, z: 0, rx: 0.04, ry: -0.4, rz:  0.03 },
-  { t: 0.25, x: -2.2,  y: -1.0, z: 0, rx: 0.04, ry:  0.4, rz: -0.03 },
-  { t: 0.38, x:  0,    y: -1.5, z: 0, rx: 0,    ry: -0.2, rz:  0.00 },
-  { t: 0.50, x:  1.8,  y: -2.0, z: 0, rx: 0.03, ry: -0.3, rz:  0.02 },
-  { t: 0.63, x: -1.5,  y: -2.4, z: 0, rx: 0.03, ry:  0.3, rz: -0.02 },
-  { t: 0.76, x:  0,    y: -2.8, z: 0, rx: 0,    ry:  0.0, rz:  0.00 },
-  { t: 0.88, x:  0.8,  y: -3.2, z: 0, rx: 0.02, ry: -0.2, rz:  0.01 },
-] as const;
+// ── Cinematic entry A → B → hero ─────────────────────────────────────
+const ENTRY_A = { x: 7,   y: 4,   z: -8, rx: -0.40, ry: Math.PI + 0.70, rz:  0.25, s: 0.18 };
+const ENTRY_B = { x: 1.8, y: 0.6, z: -1, rx: -0.05, ry: Math.PI + 0.55, rz: -0.05, s: 0.50 };
+const FINAL_SCALE = 0.62;
+const ENTRY_MS    = 3400;
 
-function smoothstep(t: number) {
-  const c = Math.max(0, Math.min(1, t));
-  return c * c * (3 - 2 * c);
-}
+function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
+function easeInOutQuad(t: number) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
+function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
 
-function interpolateKF(progress: number) {
-  const p = Math.max(0, Math.min(1, progress));
-  let i = 0;
-  while (i < KF.length - 2 && KF[i + 1].t <= p) i++;
-  const a = KF[i], b = KF[i + 1];
-  const span = b.t - a.t;
-  const alpha = span === 0 ? 0 : smoothstep((p - a.t) / span);
-  const lerp = (u: number, v: number) => u + (v - u) * alpha;
-  return {
-    x:  lerp(a.x,  b.x),  y:  lerp(a.y,  b.y),  z:  lerp(a.z,  b.z),
-    rx: lerp(a.rx, b.rx), ry: lerp(a.ry, b.ry), rz: lerp(a.rz, b.rz),
-  };
-}
+type PropInfo = { mesh: THREE.Mesh; axis: 'x' | 'y' | 'z' };
 
-// ── Error boundary ───────────────────────────────────────────────
+// ── Error boundary ────────────────────────────────────────────────────
 class ModelErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   render() { return this.state.failed ? null : this.props.children; }
 }
 
-// ── Propeller info ───────────────────────────────────────────────
-type PropInfo = { mesh: THREE.Mesh; axis: 'x' | 'y' | 'z' };
+// ── Camera initializer ────────────────────────────────────────────────
+function CameraInit() {
+  const { camera } = useThree();
+  useEffect(() => {
+    camera.position.set(0, 0.8, 7);
+    camera.lookAt(0, 0, 0);
+  }, [camera]);
+  return null;
+}
 
-// ── Drone mesh ───────────────────────────────────────────────────
+// ── Drone mesh ────────────────────────────────────────────────────────
 function DroneModel({
-  scrollProgress,
+  activeSectionRef,
   wrapperRef,
 }: {
-  scrollProgress: React.MutableRefObject<number>;
-  wrapperRef:     React.RefObject<HTMLDivElement | null>;
+  activeSectionRef: React.MutableRefObject<SectionName>;
+  wrapperRef:       React.RefObject<HTMLDivElement | null>;
 }) {
   const groupRef  = useRef<THREE.Group>(null);
   const propRefs  = useRef<PropInfo[]>([]);
   const { scene } = useGLTF('/drone.glb');
 
-  // ── Valores que GSAP anima durante la entrada ────────────────
-  // Punto 1: esquina superior-derecha fuera del viewport, dron pequeñito
-  const entry = useRef({
-    px: 15,  py: 8,  pz: -10,   // posición inicial
-    sc: 0.15,                     // escala inicial (parece muy lejos)
-    rx: BASE_RX - 0.5,            // inclinado hacia adelante (llegando)
-    ry: BASE_RY + 0.3,            // orientado ligeramente de lado
-    rz: 0.2,                      // pequeño cabeceo de vuelo
+  const curr = useRef({
+    x: ENTRY_A.x, y: ENTRY_A.y,
+    rx: ENTRY_A.rx, ry: ENTRY_A.ry, rz: ENTRY_A.rz,
   });
-
-  // ── Flags e idle ────────────────────────────────────────────
-  const isIdle   = useRef(false);
-  const idleTime = useRef(0);
-  // Posición para el lerp de scroll (solo activa en idle)
-  const curPos   = useRef(new THREE.Vector3(KF[0].x, KF[0].y, 0));
+  const entryStartRef = useRef(0);
+  const entryDone     = useRef(false);
+  const idleT         = useRef(0);
 
   useEffect(() => {
     if (!scene) return;
     propRefs.current = [];
 
-    // ── Procesar hélices ─────────────────────────────────────
-    const found: THREE.Mesh[] = [];
     scene.traverse((obj) => {
       if (/^(Cube(\.\d+)?|Plane(\.\d+)?|Ground|Floor|Background|Box)/i.test(obj.name)) {
         obj.visible = false;
         return;
       }
+      const asMesh = obj as THREE.Mesh;
+      if (asMesh.isMesh) {
+        const mat = asMesh.material as THREE.MeshStandardMaterial;
+        if (mat && 'envMapIntensity' in mat) mat.envMapIntensity = 0.85;
+      }
       if (/Propeller/i.test(obj.name) && (obj as THREE.Mesh).isMesh) {
-        found.push(obj as THREE.Mesh);
+        const mesh = obj as THREE.Mesh;
+        const geo  = mesh.geometry;
+        geo.computeBoundingBox();
+        const size = new THREE.Vector3();
+        geo.boundingBox!.getSize(size);
+        let axis: 'x' | 'y' | 'z' = 'y';
+        if (size.x <= size.y && size.x <= size.z) axis = 'x';
+        else if (size.z <= size.x && size.z <= size.y) axis = 'z';
+        propRefs.current.push({ mesh, axis });
       }
     });
 
-    for (const mesh of found) {
-      const geo = mesh.geometry.clone();
-      geo.computeBoundingBox();
-      if (!geo.boundingBox) { propRefs.current.push({ mesh, axis: 'y' }); continue; }
-
-      const size   = new THREE.Vector3();
-      const center = new THREE.Vector3();
-      geo.boundingBox.getSize(size);
-      geo.boundingBox.getCenter(center);
-
-      // El eje más delgado es el eje de giro (disco = plano)
-      let axis: 'x' | 'y' | 'z' = 'y';
-      if (size.x <= size.y && size.x <= size.z) axis = 'x';
-      else if (size.z <= size.x && size.z <= size.y) axis = 'z';
-
-      geo.translate(-center.x, -center.y, -center.z);
-      mesh.geometry = geo;
-      mesh.position.add(center.clone().applyQuaternion(mesh.quaternion));
-      propRefs.current.push({ mesh, axis });
-    }
-
-    // ── GSAP timeline: entrada cinematográfica (4 s total) ───
-    const tl = gsap.timeline({ delay: 0.15 });
-
-    // Fase 1 (0-2 s): esquina superior-derecha → detrás del texto
-    // El canvas está en z-index 2, el texto del hero en z-index 3
-    // → el dron pasa VISUALMENTE por detrás del headline
-    tl.to(entry.current, {
-      px: 3, py: -2, pz: -3,
-      sc: 0.4,
-      rx: BASE_RX - 0.12,
-      ry: BASE_RY + 0.08,
-      rz: -0.08,
-      duration: 2,
-      ease: 'power2.in',
-      onComplete() {
-        // El dron sale al primer plano: canvas pasa por delante del texto
-        if (wrapperRef.current) wrapperRef.current.style.zIndex = '10';
-      },
-    });
-
-    // Fase 2 (2-4 s): punto medio → posición de reposo final
-    tl.to(entry.current, {
-      px:  KF[0].x,
-      py:  KF[0].y,
-      pz:  0,
-      sc:  FINAL_SCALE,
-      rx:  BASE_RX,
-      ry:  BASE_RY,
-      rz:  BASE_RZ,
-      duration: 2,
-      ease: 'power2.out',
-      onComplete() {
-        // Sincronizar curPos para que el idle empiece exactamente aquí
-        curPos.current.set(entry.current.px, entry.current.py, 0);
-        isIdle.current = true;
-      },
-    });
-
-    return () => { tl.kill(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    entryStartRef.current = performance.now();
   }, [scene]);
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (!groupRef.current) return;
 
-    // ── Hélices: siempre girando, desde el primer frame ─────
+    // Propellers always spin
     for (const { mesh, axis } of propRefs.current) {
-      mesh.rotation[axis] += 0.5;
+      mesh.rotation[axis] += 0.55;
     }
 
-    if (!isIdle.current) {
-      // ── Fase de entrada: GSAP controla todo ─────────────────
-      groupRef.current.position.set(entry.current.px, entry.current.py, entry.current.pz);
-      groupRef.current.scale.setScalar(entry.current.sc);
-      groupRef.current.rotation.set(entry.current.rx, entry.current.ry, entry.current.rz);
+    const now = performance.now();
+
+    // ── Entry phase ───────────────────────────────────────────────────
+    if (!entryDone.current) {
+      const t = Math.min(1, (now - entryStartRef.current) / ENTRY_MS);
+
+      let tx: number, ty: number, tz: number,
+          trx: number, try_: number, trz: number, ts: number;
+
+      if (t < 0.55) {
+        const p = easeInOutQuad(t / 0.55);
+        tx   = lerp(ENTRY_A.x,  ENTRY_B.x,  p);
+        ty   = lerp(ENTRY_A.y,  ENTRY_B.y,  p);
+        tz   = lerp(ENTRY_A.z,  ENTRY_B.z,  p);
+        trx  = lerp(ENTRY_A.rx, ENTRY_B.rx, p);
+        try_ = lerp(ENTRY_A.ry, ENTRY_B.ry, p);
+        trz  = lerp(ENTRY_A.rz, ENTRY_B.rz, p);
+        ts   = lerp(ENTRY_A.s,  ENTRY_B.s,  p);
+        if (wrapperRef.current) wrapperRef.current.style.zIndex = '1';
+      } else {
+        const hero = SECTION_POSES.hero;
+        const p    = easeOutCubic((t - 0.55) / 0.45);
+        tx   = lerp(ENTRY_B.x,  hero.x,  p);
+        ty   = lerp(ENTRY_B.y,  hero.y,  p);
+        tz   = lerp(ENTRY_B.z,  0,       p);
+        trx  = lerp(ENTRY_B.rx, hero.rx, p);
+        try_ = lerp(ENTRY_B.ry, hero.ry, p);
+        trz  = lerp(ENTRY_B.rz, hero.rz, p);
+        ts   = lerp(ENTRY_B.s,  FINAL_SCALE, p);
+        if (wrapperRef.current) wrapperRef.current.style.zIndex = '3';
+      }
+
+      groupRef.current.position.set(tx, ty, tz);
+      groupRef.current.rotation.set(trx, try_, trz);
+      groupRef.current.scale.setScalar(ts);
+
+      if (t >= 1) {
+        entryDone.current = true;
+        const hero = SECTION_POSES.hero;
+        Object.assign(curr.current, { x: hero.x, y: hero.y,
+                                       rx: hero.rx, ry: hero.ry, rz: hero.rz });
+      }
       return;
     }
 
-    // ── Fase idle: flotación orgánica + movimiento por scroll ─
-    idleTime.current += delta;
+    // ── Idle phase: lerp + organic oscillations ───────────────────────
+    idleT.current += 1 / 60;
 
-    // Tres oscilaciones con frecuencias y fases distintas → movimiento natural
-    const bob    = Math.sin(idleTime.current * Math.PI)               * 0.15; // 0.5 Hz
-    const rollZ  = Math.sin(idleTime.current * Math.PI * 0.6  + 1.2) * 0.05; // 0.3 Hz
-    const pitchX = Math.sin(idleTime.current * Math.PI * 1.4  + 2.5) * 0.03; // 0.7 Hz
+    const tgt = SECTION_POSES[activeSectionRef.current] ?? SECTION_POSES.hero;
+    const k   = 0.045;
+    curr.current.x  += (tgt.x  - curr.current.x)  * k;
+    curr.current.y  += (tgt.y  - curr.current.y)  * k;
+    curr.current.rx += (tgt.rx - curr.current.rx) * k;
+    curr.current.ry += (tgt.ry - curr.current.ry) * k;
+    curr.current.rz += (tgt.rz - curr.current.rz) * k;
 
-    const kf = interpolateKF(scrollProgress.current);
-
-    curPos.current.x = THREE.MathUtils.lerp(curPos.current.x, kf.x, 0.045);
-    curPos.current.y = THREE.MathUtils.lerp(curPos.current.y, kf.y, 0.045);
+    const bob   = Math.sin(idleT.current * Math.PI * 0.8)       * 0.10;
+    const sway  = Math.sin(idleT.current * Math.PI * 0.5 + 1.0) * 0.05;
+    const pitch = Math.sin(idleT.current * Math.PI * 1.2 + 2.5) * 0.025;
 
     groupRef.current.scale.setScalar(FINAL_SCALE);
-    groupRef.current.position.set(curPos.current.x, curPos.current.y + bob, 0);
-
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(
-      groupRef.current.rotation.x, BASE_RX + kf.rx + pitchX, 0.05,
-    );
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(
-      groupRef.current.rotation.y, BASE_RY + kf.ry, 0.05,
-    );
-    groupRef.current.rotation.z = THREE.MathUtils.lerp(
-      groupRef.current.rotation.z, BASE_RZ + kf.rz + rollZ, 0.05,
+    groupRef.current.position.set(curr.current.x + sway, curr.current.y + bob, 0);
+    groupRef.current.rotation.set(
+      curr.current.rx + pitch,
+      curr.current.ry,
+      curr.current.rz + sway * 0.6,
     );
   });
 
-  // JSX inicializa el grupo en la posición de partida de la entrada
-  // (coincide con entry.current) para evitar un frame en negro
   return (
     <group
       ref={groupRef}
-      position={[entry.current.px, entry.current.py, entry.current.pz]}
-      rotation={[entry.current.rx, entry.current.ry, entry.current.rz]}
-      scale={entry.current.sc}
+      position={[ENTRY_A.x, ENTRY_A.y, ENTRY_A.z]}
+      rotation={[ENTRY_A.rx, ENTRY_A.ry, ENTRY_A.rz]}
+      scale={ENTRY_A.s}
     >
       <primitive object={scene} />
     </group>
   );
 }
 
-// ── Camera ───────────────────────────────────────────────────────
-function CameraSetup() {
-  const { camera } = useThree();
-  useEffect(() => {
-    camera.position.set(0, 1, 8);
-    camera.lookAt(0, 0, 0);
-  }, [camera]);
-  return null;
-}
-
 useGLTF.preload('/drone.glb');
 
-// ── Scene root ───────────────────────────────────────────────────
+// ── Scene root ────────────────────────────────────────────────────────
 export default function DroneScene() {
-  const scrollProgress = useRef(0);
-  const wrapperRef     = useRef<HTMLDivElement>(null);
+  const wrapperRef       = useRef<HTMLDivElement>(null);
+  const activeSectionRef = useRef<SectionName>('hero');
 
+  // Section IntersectionObserver
+  useEffect(() => {
+    const ratios = new Map<string, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const name = e.target.getAttribute('data-drone-target');
+          if (!name) continue;
+          ratios.set(name, e.isIntersecting ? e.intersectionRatio : 0);
+        }
+        let best: string | null = null;
+        let bestRatio = -1;
+        ratios.forEach((ratio, name) => {
+          if (ratio > bestRatio) { best = name; bestRatio = ratio; }
+        });
+        if (best && best in SECTION_POSES) {
+          activeSectionRef.current = best as SectionName;
+        }
+      },
+      { threshold: [0, 0.15, 0.35, 0.55, 0.75], rootMargin: '-20% 0px -30% 0px' },
+    );
+
+    const id = setTimeout(() => {
+      document.querySelectorAll('[data-drone-target]').forEach((el) => observer.observe(el));
+    }, 400);
+
+    return () => { clearTimeout(id); observer.disconnect(); };
+  }, []);
+
+  // Fade near footer
   useEffect(() => {
     const onScroll = () => {
-      const max      = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = max > 0 ? window.scrollY / max : 0;
-      scrollProgress.current = progress;
-
-      // Fade out al acercarse a Contacto / Footer
-      if (wrapperRef.current) {
-        const opacity = progress > 0.80
-          ? Math.max(0, 1 - (progress - 0.80) / 0.10)
-          : 1;
-        wrapperRef.current.style.opacity = String(opacity);
-      }
+      if (!wrapperRef.current) return;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p   = max > 0 ? window.scrollY / max : 0;
+      wrapperRef.current.style.opacity =
+        p > 0.85 ? String(Math.max(0, 1 - (p - 0.85) / 0.10)) : '1';
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    // z-index inicial: 2 → detrás del texto del hero (z-index 3)
-    // Cambia a 10 al completarse la fase 1 de la entrada (viene al primer plano)
-    <div id="drone-canvas" ref={wrapperRef} aria-hidden="true"
-      style={{ transition: 'opacity 0.35s ease' }}>
-      <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
-        style={{ background: 'transparent' }}>
-        <CameraSetup />
-        <ambientLight intensity={0.9} />
-        <directionalLight position={[ 5, 10,  5]} intensity={1.3} castShadow />
-        <directionalLight position={[-5,  5, -5]} intensity={0.4} color="#00ACC1" />
-        <directionalLight position={[ 0, -5,  5]} intensity={0.2} color="#7CB342" />
+    <div id="drone-canvas" ref={wrapperRef} aria-hidden="true">
+      <Canvas
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}
+        style={{ background: 'transparent' }}
+      >
+        <CameraInit />
+        <ambientLight intensity={0.55} />
+        <directionalLight position={[5, 8, 6]}   intensity={1.30} color="#eaffea" />
+        <directionalLight position={[-5, 3, -4]}  intensity={0.55} color="#7dd35b" />
+        <directionalLight position={[-3, -2, 5]}  intensity={0.75} color="#4dd4e1" />
         <Suspense fallback={null}>
           <ModelErrorBoundary>
-            <DroneModel scrollProgress={scrollProgress} wrapperRef={wrapperRef} />
+            <DroneModel activeSectionRef={activeSectionRef} wrapperRef={wrapperRef} />
           </ModelErrorBoundary>
-          <Environment preset="sunset" />
         </Suspense>
       </Canvas>
     </div>

@@ -1,141 +1,162 @@
 'use client';
 
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import WordReveal from '@/components/ui/WordReveal';
+import FadeIn from '@/components/ui/FadeIn';
 import CountUp from '@/components/ui/CountUp';
 
-const PHONE    = '+34600000000';
-const WHATSAPP = '34600000000';
-const WA_MSG   = encodeURIComponent('Hola, me gustaría solicitar información sobre vuestros servicios de drones agrícolas.');
+const WA = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
 
 const STATS = [
-  { to: 10,  suffix: 'x',  label: 'Más rápido'      },
-  { to: 30,  suffix: '%',  label: 'Menos producto'   },
-  { to: 100, suffix: '%',  label: 'Certificado AESA' },
+  { to: 10,  suffix: '×',     label: 'más rápido que un tractor' },
+  { to: 30,  suffix: '%',     label: 'menos producto fitosanitario' },
+  { to: 15,  suffix: ' ha/h', label: 'cobertura por hora de vuelo' },
 ];
 
 export default function HeroSection() {
   return (
-    <section id="inicio" style={{
-      minHeight: '100vh',
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'center',
-      overflow: 'hidden',
-      padding: '8rem 1.5rem 5rem',
-    }}>
-      {/* ─── Background ──────────────────────────────────── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Image src="/images/Hero.jpg" alt="" fill priority quality={92}
-          style={{ objectFit: 'cover', objectPosition: 'center' }} />
-        <motion.div initial={{ scale: 1.07 }} animate={{ scale: 1 }}
-          transition={{ duration: 9, ease: 'easeOut' }}
-          style={{ position: 'absolute', inset: 0 }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(to bottom, rgba(4,16,6,0.78) 0%, rgba(10,32,13,0.55) 50%, rgba(4,16,6,0.88) 100%)',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '72px 72px',
-        }} />
-      </div>
+    <section
+      id="inicio"
+      data-drone-target="hero"
+      style={{
+        position: 'relative',
+        minHeight: '100svh',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        paddingTop: 120,
+      }}
+    >
+      {/* Background photo */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: 'url(/images/hero-field.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 65%',
+        opacity: 0.32,
+        filter: 'saturate(0.9) contrast(1.05)',
+      }} />
 
-      {/* ─── Layout: texto izquierda (centrado) | dron derecha ── */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 3 }}>
-        <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', gap: '2rem' }}>
+      {/* Dark gradient overlay */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'linear-gradient(180deg, var(--bg) 0%, color-mix(in oklch, var(--bg) 65%, transparent) 38%, color-mix(in oklch, var(--bg) 85%, transparent) 70%, var(--bg) 100%)',
+      }} />
 
-          {/* ── Columna izquierda: todo centrado dentro del 50% ── */}
-          <div style={{ textAlign: 'center' }}>
+      {/* Grid */}
+      <div className="grid-bg" style={{ opacity: 0.35 }} />
 
-            {/* Cert badge */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(124,179,66,0.14)', border: '1px solid rgba(124,179,66,0.36)', borderRadius: '50px', padding: '0.38rem 1.1rem', color: '#a5d46a', fontSize: '0.8rem', fontWeight: '500', backdropFilter: 'blur(10px)', marginBottom: '1.5rem', fontFamily: 'Inter, sans-serif' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7CB342', display: 'inline-block' }} />
-              Pilotos certificados AESA · Castilla y León
-            </motion.div>
+      {/* Radial spotlight */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(60% 50% at 20% 60%, color-mix(in oklch, var(--accent) 8%, transparent), transparent 60%)',
+      }} />
 
-            {/*
-              H1: dos líneas sin bloques anidados.
-              Cada WordReveal ya es display:block → exactamente 2 bloques,
-              sin el <span display:block> extra que causaba el hueco triple.
-              lineHeight ajustado a 1.05 para que queden compactos.
-            */}
-            <h1 style={{
-              color: 'white',
-              fontSize: 'clamp(2rem, 4.8vw, 3.6rem)',
-              fontWeight: '900',
-              lineHeight: 1.05,
-              letterSpacing: '-0.025em',
-              marginBottom: '1.25rem',
-              fontFamily: 'Poppins, sans-serif',
-            }}>
-              {/* Línea 1: texto blanco */}
-              <WordReveal text="Tratamientos agrícolas" delay={0.45} stagger={0.09} />
-              {/* Línea 2: gradient — aplicado al span que envuelve WordReveal,
-                  no a un span inline dentro de WordReveal (eso causaba el bloque extra) */}
-              <span className="gradient-text" style={{ display: 'block' }}>
-                <WordReveal text="con drones de precisión" delay={0.72} stagger={0.08} />
-              </span>
-            </h1>
+      <div className="wrap" style={{ position: 'relative', zIndex: 4 }}>
+        <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 60, alignItems: 'center' }}>
 
-            {/* Subline */}
-            <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              style={{ color: 'rgba(255,255,255,0.78)', fontSize: 'clamp(0.9rem, 1.8vw, 1.1rem)', lineHeight: 1.65, maxWidth: '460px', margin: '0 auto 2.5rem', fontFamily: 'Inter, sans-serif' }}>
-              Soluciones tecnológicas para el agricultor moderno en Segovia, Valladolid y Castilla y León.
-              Más eficiencia, menos coste, sin pisar el cultivo.
-            </motion.p>
+          {/* Left: copy */}
+          <div>
+            <FadeIn delay={50}>
+              <div className="chip" style={{ marginBottom: 24 }}>
+                <span className="dot" />
+                Castilla y León · Pilotos AESA certificados
+              </div>
+            </FadeIn>
 
-            {/* CTAs */}
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
-              {[
-                { label: '📋 Pedir presupuesto', href: '#contacto',                               cls: 'btn-secondary', ext: false },
-                { label: '📞 Llamar',            href: `tel:${PHONE}`,                            cls: 'btn-outline',   ext: false },
-                { label: '💬 WhatsApp',          href: `https://wa.me/${WHATSAPP}?text=${WA_MSG}`, cls: 'btn-whatsapp',  ext: true  },
-              ].map((cta, i) => (
-                <motion.a key={cta.label} href={cta.href}
-                  target={cta.ext ? '_blank' : undefined}
-                  rel={cta.ext ? 'noopener noreferrer' : undefined}
-                  className={cta.cls}
-                  initial={{ opacity: 0, scale: 0.9, y: 14 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: 1.35 + i * 0.1, ease: 'easeOut' }}
-                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}
-                  style={{ fontSize: '0.95rem', padding: '0.9rem 1.5rem' }}>
-                  {cta.label}
-                </motion.a>
-              ))}
-            </div>
+            <FadeIn delay={150}>
+              <h1 className="h-display" style={{ lineHeight: 1.04, color: 'var(--text)' }}>
+                Tratamientos<br />agrícolas con<br />
+                <em style={{
+                  fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+                  color: 'var(--accent)', display: 'inline-block',
+                  lineHeight: 1, paddingBottom: '0.18em',
+                }}>
+                  drones de precisión
+                </em>
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={300}>
+              <p className="lede" style={{ marginTop: 52, maxWidth: '52ch' }}>
+                Soluciones aéreas para el agricultor moderno en Segovia, Valladolid y toda Castilla&nbsp;y&nbsp;León.
+                Más eficiencia, menos producto, sin pisar el cultivo.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={450} style={{ marginTop: 36, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <a href="#contacto" className="btn btn-primary">
+                Pedir presupuesto
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </a>
+              <a href={WA} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+                WhatsApp
+              </a>
+            </FadeIn>
 
             {/* Stats strip */}
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.75, ease: [0.22, 1, 0.36, 1] }}
-              style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(14px)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-              {STATS.map((s, i) => (
-                <div key={s.label} style={{ textAlign: 'center', padding: '1rem 1.4rem', borderRight: i < STATS.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
-                  <div style={{ color: '#7CB342', fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: '800', lineHeight: 1, fontFamily: 'Poppins, sans-serif' }}>
-                    <CountUp to={s.to} suffix={s.suffix} duration={2.2} />
+            <FadeIn delay={600} style={{ marginTop: 56 }}>
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+                border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden',
+                background: 'var(--bg-card)', backdropFilter: 'blur(10px)',
+              }}>
+                {STATS.map((s, i) => (
+                  <div key={i} style={{
+                    padding: '22px 24px',
+                    borderRight: i < 2 ? '1px solid var(--border)' : 'none',
+                  }}>
+                    <div style={{
+                      fontFamily: 'var(--font-display)', fontWeight: 800,
+                      fontSize: 'clamp(28px, 3.4vw, 40px)',
+                      color: 'var(--accent)', letterSpacing: '-0.03em', lineHeight: 1,
+                    }}>
+                      <CountUp to={s.to} suffix={s.suffix} duration={2.2} />
+                    </div>
+                    <div className="readout" style={{ marginTop: 8 }}>{s.label}</div>
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.68rem', marginTop: '0.2rem', fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap' }}>{s.label}</div>
-                </div>
-              ))}
-            </motion.div>
-
+                ))}
+              </div>
+            </FadeIn>
           </div>
 
-          {/* ── Columna derecha: vacía, el Canvas fixed del dron flota aquí ── */}
-          <div className="hero-right" style={{ minHeight: '420px' }} />
-
+          {/* Right column — drone floats here; HUD rings for visual framing */}
+          <div className="hero-right" style={{ position: 'relative', minHeight: 520 }}>
+            <FadeIn delay={350}>
+              <svg viewBox="0 0 400 400" style={{
+                position: 'absolute', inset: '-10% -10% auto auto',
+                width: '110%', height: 'auto', opacity: 0.45,
+              }}>
+                <circle cx="200" cy="200" r="180" stroke="var(--accent)"   strokeWidth="0.6" fill="none" strokeDasharray="3 6" />
+                <circle cx="200" cy="200" r="130" stroke="var(--accent-2)" strokeWidth="0.6" fill="none" strokeDasharray="2 8" />
+                <circle cx="200" cy="200" r="80"  stroke="var(--accent)"   strokeWidth="0.6" fill="none" />
+                {Array.from({ length: 24 }).map((_, i) => {
+                  const a = (i / 24) * Math.PI * 2;
+                  const x1 = 200 + Math.cos(a) * 180, y1 = 200 + Math.sin(a) * 180;
+                  const x2 = 200 + Math.cos(a) * 188, y2 = 200 + Math.sin(a) * 188;
+                  return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--accent)" strokeWidth="1" />;
+                })}
+              </svg>
+            </FadeIn>
+          </div>
         </div>
+
+        {/* Bottom scroll cue */}
+        <FadeIn delay={1000} style={{
+          marginTop: 60, display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 20,
+        }}>
+          <span className="readout">SCROLL · explorar capacidades</span>
+          <span className="readout">07 SECCIONES · 01/07</span>
+        </FadeIn>
       </div>
 
       <style>{`
-        @media (max-width: 860px) {
-          .hero-grid  { grid-template-columns: 1fr !important; }
+        @media (max-width: 980px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
           .hero-right { display: none !important; }
         }
       `}</style>

@@ -1,139 +1,130 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 
-const PHONE = '+34600000000';
-const WHATSAPP = '34600000000';
-const WA_MSG = encodeURIComponent('Hola, me gustaría solicitar información sobre vuestros servicios de drones agrícolas.');
+const TEL = 'tel:+34600000000';
 
 const NAV = [
-  { href: '#servicios', label: 'Servicios' },
-  { href: '#ventajas',  label: 'Ventajas'  },
-  { href: '#cobertura', label: 'Cobertura' },
-  { href: '#nosotros',  label: 'Nosotros'  },
-  { href: '#contacto',  label: 'Contacto'  },
-];
+  ['Servicios',      '#servicios'],
+  ['Ventajas',       '#ventajas'],
+  ['Monitorización', '#monitorizacion'],
+  ['Cobertura',      '#cobertura'],
+  ['Nosotros',       '#nosotros'],
+] as const;
+
+function LogoMark({ size = 32 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="20" y="20" width="8" height="8" rx="2" fill="var(--accent)" />
+      <path d="M22 22L10 12M26 22L38 12M22 26L10 36M26 26L38 36"
+        stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+      {([[10,12],[38,12],[10,36],[38,36]] as [number,number][]).map(([x,y], i) => (
+        <ellipse key={i} cx={x} cy={y} rx="6" ry="1.2" fill="var(--accent-2)" opacity="0.85">
+          <animate attributeName="transform" type="rotate"
+            from={`0 ${x} ${y}`} to={`360 ${x} ${y}`}
+            dur={`${0.15 + i * 0.02}s`} repeatCount="indefinite" />
+        </ellipse>
+      ))}
+    </svg>
+  );
+}
 
 export default function Header() {
+  const [open,     setOpen]     = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [visible,  setVisible]  = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    let lastY = 0;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 50);
-      setVisible(y < lastY || y < 80);
-      lastY = y;
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const f = () => setScrolled(window.scrollY > 30);
+    f();
+    window.addEventListener('scroll', f, { passive: true });
+    return () => window.removeEventListener('scroll', f);
   }, []);
 
   return (
-    <motion.header
-      animate={{ y: visible ? 0 : -90, opacity: visible ? 1 : 0 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: scrolled ? 'rgba(10,30,12,0.96)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(18px) saturate(180%)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : 'none',
-        padding: '0 1.5rem',
-        transition: 'background 0.4s, border-color 0.4s',
-      }}
-    >
-      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '68px' }}>
+    <header style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+      padding: scrolled ? '12px 0' : '20px 0',
+      background: scrolled ? 'color-mix(in oklch, var(--bg) 78%, transparent)' : 'transparent',
+      borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+      backdropFilter: scrolled ? 'blur(16px)' : 'none',
+      WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
+      transition: 'all 0.3s ease',
+    }}>
+      <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
 
-        {/* Logo */}
-        <a href="#inicio" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <div style={{
-            width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden',
-            position: 'relative', flexShrink: 0,
-            border: '2px solid rgba(124,179,66,0.5)',
-            boxShadow: '0 4px 16px rgba(124,179,66,0.3)',
-          }}>
-            <Image src="/images/logo.jpeg" alt="AeroCampo Iberia" fill style={{ objectFit: 'cover' }} sizes="40px" />
-          </div>
-          <div>
-            <div style={{ color: 'white', fontWeight: '700', fontSize: '1rem', fontFamily: 'Poppins, sans-serif', lineHeight: 1.1 }}>AeroCampo</div>
-            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.62rem', fontFamily: 'Inter, sans-serif', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Iberia · Drones Agrícolas</div>
+        <a href="#inicio" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <LogoMark size={32} />
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em' }}>
+              AeroCampo <span style={{ color: 'var(--accent)' }}>Iberia</span>
+            </span>
+            <span className="mono" style={{ fontSize: 9.5, color: 'var(--text-dim)', letterSpacing: '0.16em', marginTop: 2 }}>
+              AGRI · DRONE · OPS
+            </span>
           </div>
         </a>
 
-        {/* Desktop nav */}
-        <nav style={{ display: 'flex', gap: '0.1rem' }} className="hdr-desktop">
-          {NAV.map(link => (
-            <a key={link.href} href={link.href}
-              style={{ color: 'rgba(255,255,255,0.82)', textDecoration: 'none', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.86rem', fontWeight: '500', fontFamily: 'Poppins, sans-serif', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#7CB342')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.82)')}
-            >{link.label}</a>
+        <nav className="nav-desktop" style={{ display: 'flex', gap: 28 }}>
+          {NAV.map(([label, href]) => (
+            <a key={href} href={href} style={{
+              fontSize: 13.5, color: 'var(--text-mut)',
+              fontFamily: 'var(--font-display)', fontWeight: 500,
+              transition: 'color 0.2s',
+            }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-mut)')}>
+              {label}
+            </a>
           ))}
         </nav>
 
-        {/* Desktop CTAs */}
-        <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }} className="hdr-desktop">
-          <motion.a href={`tel:${PHONE}`} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}
-            style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', padding: '0.45rem 0.9rem', borderRadius: '8px', fontSize: '0.8rem', fontFamily: 'Poppins, sans-serif', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.3rem', transition: 'color 0.2s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#7CB342')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}>
-            📞 Llamar
-          </motion.a>
-          <motion.a href={`https://wa.me/${WHATSAPP}?text=${WA_MSG}`} target="_blank" rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}
-            style={{ background: '#25D366', color: 'white', padding: '0.45rem 1rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif', textDecoration: 'none' }}>
-            💬 WhatsApp
-          </motion.a>
-          <motion.a href="#contacto" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}
-            style={{ background: '#7CB342', color: 'white', padding: '0.45rem 1.1rem', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '600', fontFamily: 'Poppins, sans-serif', textDecoration: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <a href="#contacto" className="btn btn-primary" style={{ fontSize: 13.5, padding: '11px 18px' }}>
             Presupuesto
-          </motion.a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </a>
+          <button onClick={() => setOpen((o) => !o)} className="menu-toggle" aria-label="Menú"
+            style={{
+              display: 'none', background: 'transparent',
+              border: '1px solid var(--border-2)', borderRadius: 999,
+              width: 44, height: 44, cursor: 'pointer',
+              alignItems: 'center', justifyContent: 'center', color: 'var(--text)',
+            }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              {open
+                ? <><path d="M18 6L6 18" /><path d="M6 6l12 12" /></>
+                : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
+            </svg>
+          </button>
         </div>
-
-        {/* Hamburger */}
-        <button onClick={() => setMenuOpen(o => !o)} aria-label="Menú" className="hdr-mobile"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          {[0,1,2].map(i => (
-            <motion.span key={i}
-              animate={menuOpen ? (i===0 ? {rotate:45,y:7} : i===1 ? {opacity:0} : {rotate:-45,y:-7}) : {rotate:0,y:0,opacity:1}}
-              style={{ display:'block', width:'22px', height:'2px', background:'white', borderRadius:'2px' }} />
-          ))}
-        </button>
       </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div key="mob"
-            initial={{ height:0, opacity:0 }} animate={{ height:'auto', opacity:1 }} exit={{ height:0, opacity:0 }}
-            transition={{ duration: 0.28, ease: 'easeInOut' }}
-            style={{ overflow:'hidden', background:'rgba(8,24,10,0.98)', borderTop:'1px solid rgba(255,255,255,0.07)' }}>
-            <div style={{ padding: '0.75rem 1.5rem 1.5rem' }}>
-              {NAV.map((link,i) => (
-                <motion.a key={link.href} href={link.href}
-                  initial={{ opacity:0, x:-12 }} animate={{ opacity:1, x:0 }} transition={{ delay: i*0.05 }}
-                  onClick={() => setMenuOpen(false)}
-                  style={{ display:'block', color:'white', textDecoration:'none', padding:'0.7rem 0', fontSize:'1rem', fontWeight:'500', fontFamily:'Poppins, sans-serif', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
-                  {link.label}
-                </motion.a>
-              ))}
-              <div style={{ display:'flex', gap:'0.75rem', marginTop:'1rem' }}>
-                <a href={`tel:${PHONE}`} style={{ flex:1, background:'rgba(255,255,255,0.1)', color:'white', textDecoration:'none', padding:'0.75rem', borderRadius:'8px', textAlign:'center', fontFamily:'Poppins, sans-serif', fontSize:'0.9rem', fontWeight:'600' }}>📞 Llamar</a>
-                <a href={`https://wa.me/${WHATSAPP}?text=${WA_MSG}`} target="_blank" rel="noopener noreferrer" style={{ flex:1, background:'#25D366', color:'white', textDecoration:'none', padding:'0.75rem', borderRadius:'8px', textAlign:'center', fontFamily:'Poppins, sans-serif', fontSize:'0.9rem', fontWeight:'600' }}>💬 WhatsApp</a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {open && (
+        <div style={{
+          marginTop: 12, padding: '20px 28px 28px',
+          background: 'var(--bg-alt)', borderTop: '1px solid var(--border)',
+          display: 'flex', flexDirection: 'column', gap: 14,
+        }}>
+          {NAV.map(([label, href]) => (
+            <a key={href} href={href} onClick={() => setOpen(false)}
+              style={{ fontSize: 18, color: 'var(--text)', fontFamily: 'var(--font-display)', fontWeight: 600 }}>
+              {label}
+            </a>
+          ))}
+          <a href={TEL} style={{ fontSize: 14, color: 'var(--text-mut)', fontFamily: 'var(--font-mono)', marginTop: 4 }}>
+            +34 600 000 000
+          </a>
+        </div>
+      )}
 
       <style>{`
-        @media (max-width: 860px) { .hdr-desktop { display: none !important; } }
-        @media (min-width: 861px) { .hdr-mobile  { display: none !important; } }
+        @media (max-width: 880px) {
+          .nav-desktop { display: none !important; }
+          .menu-toggle { display: inline-flex !important; }
+        }
       `}</style>
-    </motion.header>
+    </header>
   );
 }

@@ -1,0 +1,17 @@
+Place your drone.glb model here as: /public/drone.glb
+
+The model should have the following named objects for propeller animation:
+- Propeller_1
+- Propeller_2
+- Propeller_3
+- Propeller_4
+- Propeller_5
+- Propeller_6
+
+Recommended sources (free agricultural/hexacopter drone models):
+- Sketchfab: https://sketchfab.com/search?q=agricultural+drone&type=models&sort_by=-likeCount&features=downloadable
+- Free3D: https://free3d.com/
+- TurboSquid (free section)
+
+For best performance keep the model under 5MB.
+Run: npx gltfjsx public/drone.glb to inspect node names after placing the file.

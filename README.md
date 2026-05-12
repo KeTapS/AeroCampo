@@ -1,13 +1,14 @@
 # AeroCampo Iberia — Sitio Web
 
-Sitio web profesional para servicios de drones agrícolas en Castilla y León.
+Landing page profesional para empresa de tratamientos agrícolas con drones en Castilla y León.
 
-## Stack tecnológico
+## Stack
 
-- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS v4**
-- **React Three Fiber** + **Drei** — escena 3D del dron animado
-- **GSAP** — animaciones de entrada y scroll
+- **React Three Fiber** + **Drei** — escena 3D interactiva del dron
+- **GSAP** — animación de entrada cinematográfica
+- **Framer Motion** — animaciones de secciones
 - **Formspree** — formulario de contacto sin backend
 
 ## Inicio rápido
@@ -21,103 +22,76 @@ Abre http://localhost:3000
 
 ---
 
-## Configuración necesaria antes del deploy
+## Configuración antes del deploy
 
-### 1. Modelo 3D del dron (obligatorio)
+### 1. Modelo 3D (`public/drone.glb`)
 
-Coloca tu modelo en:
-```
-public/drone.glb
-```
-
-El modelo debe tener los propulsores nombrados `Propeller_1` a `Propeller_6`.
-Usa `npx gltfjsx public/drone.glb` para inspeccionar nombres de nodos tras colocar el archivo.
-
-**Fuentes gratuitas recomendadas:**
-- Sketchfab (filtrar por downloadable + CC license)
-- Free3D.com
+Coloca tu modelo GLB en `public/drone.glb`. Los propulsores deben tener `Propeller` en el nombre del nodo para que la animación de giro funcione automáticamente.
 
 ### 2. Formulario de contacto (Formspree)
 
-1. Crea cuenta gratuita en https://formspree.io
-2. Crea un nuevo formulario y copia el Form ID (ej: `xyzabcde`)
-3. Edita `components/sections/ContactSection.tsx` línea 8:
+1. Crea una cuenta gratuita en https://formspree.io
+2. Crea un formulario y copia el ID (ej: `xyzabcde`)
+3. Edita `components/sections/ContactSection.tsx`:
+
 ```ts
 const FORMSPREE_ID = 'TU_FORM_ID_AQUI';
 ```
 
-### 3. Número de teléfono real
+### 3. Teléfono real
 
-Busca globalmente `+34600000000` y reemplaza con el número real en:
+Reemplaza `+34600000000` (y `34600000000` para WhatsApp) con el número real en:
 - `components/Header.tsx`
 - `components/FloatingButtons.tsx`
 - `components/Footer.tsx`
 - `components/sections/ContactSection.tsx`
 - `components/sections/HeroSection.tsx`
 
-Y `34600000000` (formato sin +) en los mismos archivos para los links de WhatsApp.
+### 4. SEO local
 
-### 4. Schema.org (SEO local)
-
-En `app/layout.tsx`, actualiza el objeto `schemaOrg` con la dirección real y el teléfono.
+En `app/layout.tsx` actualiza el objeto `schemaOrg` con la dirección y teléfono reales.
 
 ---
 
-## Estructura del proyecto
+## Estructura
 
 ```
 app/
-  layout.tsx              # Layout raíz + metadatos SEO + Schema.org LocalBusiness
-  page.tsx                # Página principal + detección de sección activa
-  globals.css             # Variables CSS + estilos globales + utilidades
+  layout.tsx          # Layout raíz + metadatos SEO + Schema.org
+  page.tsx            # Página principal
+  globals.css         # Variables CSS + estilos globales
 
 components/
-  DroneScene.tsx          # Canvas 3D con dron (React Three Fiber) — solo cliente
-  Header.tsx              # Navbar sticky con menú responsive
-  Footer.tsx              # Pie de página con enlaces
-  FloatingButtons.tsx     # Botones flotantes WhatsApp + Teléfono (fijos)
-  sections/
-    HeroSection.tsx       # Sección inicial con headline + CTAs + stats
-    ServicesSection.tsx   # 4 tarjetas de servicios
-    AdvantagesSection.tsx # 6 ventajas vs maquinaria pesada
-    CoverageSection.tsx   # Mapa de cobertura por provincias CyL
-    AboutSection.tsx      # Quiénes somos + valores de empresa
-    TrustSection.tsx      # Certificaciones, seguros y documentación
-    ContactSection.tsx    # Formulario Formspree + CTAs de contacto
+  DroneScene.tsx      # Canvas 3D (React Three Fiber) — solo cliente
+  Header.tsx          # Navbar sticky responsive
+  Footer.tsx          # Pie de página
+  FloatingButtons.tsx # Botones flotantes WhatsApp + Teléfono
+  sections/           # HeroSection · ServicesSection · AdvantagesSection
+                      # MonitoringSection · CoverageSection · AboutSection
+                      # TrustSection · ContactSection
+  ui/                 # CountUp · FadeIn · WordReveal
 
 public/
-  drone.glb               # ← Coloca aquí tu modelo 3D
+  drone.glb           # Modelo 3D (añadir manualmente)
+  images/             # Imágenes del sitio
 ```
-
----
-
-## Comportamiento del dron 3D
-
-| Estado | Descripción |
-|--------|-------------|
-| **Entrada** | Vuela desde lejos hacia cámara (2.5s, easeOutCubic) |
-| **Idle** | Propulsores girando + bobbing en Y ±0.15u + tilt en Z ±2° |
-| **Por sección** | Se reposiciona suavemente al cambiar de sección visible |
-
-Para personalizar posiciones, edita `SECTION_POSITIONS` en `components/DroneScene.tsx`.
 
 ---
 
 ## Deploy
 
 ```bash
-npm run build   # Verificar compilación
-# Conecta el repo a Vercel, Netlify o similar
+npm run build
 ```
+
+Compatible con Vercel, Netlify o cualquier plataforma Node.js.
 
 ---
 
-## Paleta de colores
+## Paleta
 
 | Variable | Hex | Uso |
-|----------|-----|-----|
-| `--primary` | `#1B5E20` | Verde oscuro — color principal |
-| `--secondary` | `#7CB342` | Verde lima — acentos y CTAs |
-| `--accent` | `#00ACC1` | Azul agua — detalles |
-
-Definidas en `app/globals.css`.
+|---|---|---|
+| `--primary` | `#1B5E20` | Verde oscuro |
+| `--secondary` | `#7CB342` | Verde lima — CTAs |
+| `--accent` | `#00ACC1` | Azul agua |

@@ -57,7 +57,7 @@ export default function ContactSection() {
       id="contacto"
       data-drone-target="contact"
       className="section-pad"
-      style={{ background: 'var(--bg-alt)' }}
+      style={{ background: 'var(--bg-alt)', minHeight: 'calc(100svh - 185px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
       <div className="grid-bg" style={{ opacity: 0.3 }} />
       <div className="wrap" style={{ position: 'relative' }}>
@@ -70,12 +70,12 @@ export default function ContactSection() {
             <h2 className="h-section" style={{ marginTop: 18 }}>
               Pide tu<br /><em>presupuesto sin compromiso</em>
             </h2>
-            <p className="lede" style={{ marginTop: 22 }}>
+            <p className="lede" style={{ marginTop: 20 }}>
               Cuéntanos tu parcela, el tipo de cultivo y el tratamiento que necesitas.
               Respondemos en menos de 24h con un presupuesto cerrado por hectárea.
             </p>
 
-            <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {CONTACTS.map((c) => (
                 <a key={c.label} href={c.href}
                   target={c.href.startsWith('http') ? '_blank' : undefined}
@@ -166,7 +166,7 @@ export default function ContactSection() {
                       <textarea
                         required
                         name="mensaje"
-                        rows={3}
+                        rows={4}
                         placeholder="¿Qué servicio necesitas y cuándo?"
                         style={{
                           background: 'var(--bg)', color: 'var(--text)',
@@ -181,10 +181,10 @@ export default function ContactSection() {
                     </label>
                   </div>
 
-                  <button type="submit" className="btn btn-primary" style={{ marginTop: 20, width: '100%', justifyContent: 'center' }}>
+                  <button type="submit" className="btn btn-primary" style={{ marginTop: 18, width: '100%', justifyContent: 'center' }}>
                     Enviar solicitud <Icon name="arrow" size={14} />
                   </button>
-                  <p className="mono" style={{ fontSize: 10.5, color: 'var(--text-dim)', marginTop: 14, textAlign: 'center', letterSpacing: '0.08em' }}>
+                  <p className="mono" style={{ fontSize: 10.5, color: 'var(--text-dim)', marginTop: 8, textAlign: 'center', letterSpacing: '0.08em' }}>
                     RESPUESTA · &lt; 24H · TODOS LOS DÍAS LABORABLES
                   </p>
                 </>

@@ -15,7 +15,7 @@ export default function AboutSection() {
       id="nosotros"
       data-drone-target="about"
       className="section-pad"
-      style={{ background: 'var(--bg-alt)' }}
+      style={{ background: 'var(--bg-alt)', minHeight: '100svh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
       <div className="grid-bg" style={{ opacity: 0.3 }} />
       <div className="wrap" style={{ position: 'relative' }}>
@@ -28,16 +28,16 @@ export default function AboutSection() {
             <h2 className="h-section" style={{ marginTop: 18 }}>
               Ingeniería <em>al servicio</em><br />del campo
             </h2>
-            <p className="lede" style={{ marginTop: 22 }}>
+            <p className="lede" style={{ marginTop: 20 }}>
               AeroCampo Iberia nace en Castilla y León con una misión sencilla: aplicar tecnología seria al cultivo de
               cereal, viña y oleaginosas. Equipo joven, pilotos AESA, ingenieros agrónomos. Trabajamos con grandes y
               pequeñas explotaciones — al mismo precio por hectárea.
             </p>
 
-            <div style={{ marginTop: 36, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {CERTS.map(([k, v]) => (
                 <div key={k} style={{
-                  padding: 16, borderRadius: 10,
+                  padding: 18, borderRadius: 10,
                   border: '1px solid var(--border)', background: 'var(--bg-card)',
                 }}>
                   <div className="mono" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.14em' }}>{k}</div>
@@ -62,27 +62,31 @@ export default function AboutSection() {
             </div>
           </FadeIn>
 
-          {/* Right: photo */}
+          {/* Right: video */}
           <FadeIn delay={120}>
             <div style={{ position: 'relative' }}>
               <div style={{
-                aspectRatio: '3 / 4', borderRadius: 16, overflow: 'hidden',
+                position: 'relative', borderRadius: 16, overflow: 'hidden',
                 border: '1px solid var(--border-2)',
-                backgroundImage: 'url(/images/Fitosanitarios.jpg)',
-                backgroundSize: 'cover', backgroundPosition: 'center',
-                position: 'relative',
+                boxShadow: '0 24px 60px -20px color-mix(in oklch, var(--accent) 40%, transparent)',
+                backgroundColor: '#000',
               }}>
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(180deg, transparent 40%, color-mix(in oklch, var(--bg) 80%, transparent) 100%)',
-                }} />
-                <div className="readout" style={{
-                  position: 'absolute', top: 14, left: 14,
-                  background: 'color-mix(in oklch, var(--bg) 70%, transparent)',
-                  padding: '6px 10px', borderRadius: 4,
-                }}>
-                  <b>● OPERACIÓN</b> · pulverización en campo
-                </div>
+                {/* Video element */}
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block',
+                    backgroundColor: '#000',
+                  }}
+                >
+                  <source src="/videos/dron.mp4" type="video/mp4" />
+                  Tu navegador no soporta video HTML5
+                </video>
               </div>
             </div>
           </FadeIn>
@@ -90,6 +94,19 @@ export default function AboutSection() {
       </div>
 
       <style>{`
+        #nosotros video {
+          transition: filter 0.4s ease;
+        }
+        #nosotros [style*='position: relative'][style*='borderRadius'] {
+          cursor: pointer;
+          transition: box-shadow 0.35s;
+        }
+        #nosotros [style*='position: relative'][style*='borderRadius']:hover {
+          box-shadow: 0 28px 70px -18px color-mix(in oklch, var(--accent) 55%, transparent) !important;
+        }
+        #nosotros [style*='position: relative'][style*='borderRadius']:hover video {
+          filter: brightness(1.08);
+        }
         @media (max-width: 900px) {
           .about-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
         }

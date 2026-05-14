@@ -22,7 +22,7 @@ export default function HeroSection() {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        paddingTop: 120,
+        paddingTop: 80,
       }}
     >
       {/* Background photo */}
@@ -54,7 +54,7 @@ export default function HeroSection() {
         <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 60, alignItems: 'center' }}>
 
           {/* Left: copy */}
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
             <FadeIn delay={50}>
               <div className="chip" style={{ marginBottom: 24 }}>
                 <span className="dot" />
@@ -63,7 +63,7 @@ export default function HeroSection() {
             </FadeIn>
 
             <FadeIn delay={150}>
-              <h1 className="h-display" style={{ lineHeight: 1.04, color: 'var(--text)' }}>
+              <h1 className="h-display" style={{ lineHeight: 1.04, color: 'var(--text)', textAlign: 'center' }}>
                 Tratamientos<br />agrícolas con<br />
                 <em style={{
                   fontFamily: 'var(--font-serif)', fontStyle: 'italic',
@@ -76,13 +76,13 @@ export default function HeroSection() {
             </FadeIn>
 
             <FadeIn delay={300}>
-              <p className="lede" style={{ marginTop: 52, maxWidth: '52ch' }}>
+              <p className="lede" style={{ marginTop: 28, maxWidth: '52ch', marginLeft: 'auto', marginRight: 'auto' }}>
                 Soluciones aéreas para el agricultor moderno en Segovia, Valladolid y toda Castilla&nbsp;y&nbsp;León.
                 Más eficiencia, menos producto, sin pisar el cultivo.
               </p>
             </FadeIn>
 
-            <FadeIn delay={450} style={{ marginTop: 36, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <FadeIn delay={450} style={{ marginTop: 20, display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
               <a href="#contacto" className="btn btn-primary">
                 Pedir presupuesto
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -98,11 +98,12 @@ export default function HeroSection() {
             </FadeIn>
 
             {/* Stats strip */}
-            <FadeIn delay={600} style={{ marginTop: 56 }}>
+            <FadeIn delay={600} style={{ marginTop: 28, width: '100%' }}>
               <div style={{
                 display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
                 border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden',
                 background: 'var(--bg-card)', backdropFilter: 'blur(10px)',
+                textAlign: 'left',
               }}>
                 {STATS.map((s, i) => (
                   <div key={i} style={{
@@ -127,7 +128,7 @@ export default function HeroSection() {
           <div className="hero-right" style={{ position: 'relative', minHeight: 520 }}>
             <FadeIn delay={350}>
               <svg viewBox="0 0 400 400" style={{
-                position: 'absolute', inset: '-10% -10% auto auto',
+                position: 'absolute', inset: '-22% -28% auto auto',
                 width: '110%', height: 'auto', opacity: 0.45,
               }}>
                 <circle cx="200" cy="200" r="180" stroke="var(--accent)"   strokeWidth="0.6" fill="none" strokeDasharray="3 6" />
@@ -135,8 +136,9 @@ export default function HeroSection() {
                 <circle cx="200" cy="200" r="80"  stroke="var(--accent)"   strokeWidth="0.6" fill="none" />
                 {Array.from({ length: 24 }).map((_, i) => {
                   const a = (i / 24) * Math.PI * 2;
-                  const x1 = 200 + Math.cos(a) * 180, y1 = 200 + Math.sin(a) * 180;
-                  const x2 = 200 + Math.cos(a) * 188, y2 = 200 + Math.sin(a) * 188;
+                  const r = (n: number) => Math.round(n * 1000) / 1000;
+                  const x1 = r(200 + Math.cos(a) * 180), y1 = r(200 + Math.sin(a) * 180);
+                  const x2 = r(200 + Math.cos(a) * 188), y2 = r(200 + Math.sin(a) * 188);
                   return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--accent)" strokeWidth="1" />;
                 })}
               </svg>
@@ -144,14 +146,6 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Bottom scroll cue */}
-        <FadeIn delay={1000} style={{
-          marginTop: 60, display: 'flex', justifyContent: 'space-between',
-          alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 20,
-        }}>
-          <span className="readout">SCROLL · explorar capacidades</span>
-          <span className="readout">07 SECCIONES · 01/07</span>
-        </FadeIn>
       </div>
 
       <style>{`

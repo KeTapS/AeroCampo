@@ -21,7 +21,7 @@ export default function MonitoringSection() {
       id="monitorizacion"
       data-drone-target="monitoring"
       className="section-pad"
-      style={{ background: 'var(--bg-alt)' }}
+      style={{ background: 'var(--bg-alt)', minHeight: '100svh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
       <div className="grid-bg" style={{ opacity: 0.35 }} />
       <div className="wrap" style={{ position: 'relative' }}>
@@ -46,7 +46,7 @@ export default function MonitoringSection() {
             <div style={{
               position: 'relative', borderRadius: 16, overflow: 'hidden',
               border: '1px solid var(--border-2)', background: 'var(--bg-card)',
-              aspectRatio: '4 / 3',
+              aspectRatio: '16 / 9',
             }}>
               <div style={{
                 position: 'absolute', inset: 0,
@@ -102,27 +102,27 @@ export default function MonitoringSection() {
 
           {/* Spectral layer list */}
           <FadeIn delay={120}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {LAYERS.map((l, i) => (
-                <article key={l.code} className="card" style={{ padding: 18 }}>
+                <article key={l.code} className="card" style={{ padding: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                     <div>
-                      <span className="mono" style={{ fontSize: 11, color: 'var(--text-dim)', letterSpacing: '0.12em' }}>/ 0{i+1}</span>
-                      <h3 style={{ fontSize: 18, marginTop: 4, fontWeight: 500 }}>
+                      <span className="mono" style={{ fontSize: 10, color: 'var(--text-dim)', letterSpacing: '0.12em' }}>/ 0{i+1}</span>
+                      <h3 style={{ fontSize: 15, marginTop: 2, fontWeight: 500 }}>
                         <span style={{ color: l.color, fontWeight: 700 }}>{l.code}</span>
                         {' '}<span style={{ color: 'var(--text)' }}>· {l.label}</span>
                       </h3>
                     </div>
                     <span className="mono" style={{ fontSize: 12, color: 'var(--text)' }}>{l.pct}%</span>
                   </div>
-                  <div style={{ marginTop: 12, height: 4, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                  <div style={{ marginTop: 8, height: 3, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ width: `${l.pct}%`, height: '100%', background: l.color, boxShadow: `0 0 12px ${l.color}` }} />
                   </div>
                 </article>
               ))}
 
               <div style={{
-                display: 'flex', gap: 10, marginTop: 4, padding: '14px 16px',
+                display: 'flex', gap: 10, marginTop: 2, padding: '10px 14px',
                 border: '1px dashed var(--border-2)', borderRadius: 12,
                 fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-mut)',
               }}>

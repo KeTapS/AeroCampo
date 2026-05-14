@@ -67,7 +67,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <div id="scroll-root">{children}</div>
+      </body>
     </html>
   );
 }

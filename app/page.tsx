@@ -21,7 +21,7 @@ const DroneScene = dynamic(() => import('@/components/DroneScene'), {
 export default function Home() {
   return (
     <>
-      <DroneScene />
+      {/* <DroneScene /> */}
       <Header />
       <main>
         <HeroSection />

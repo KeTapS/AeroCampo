@@ -46,8 +46,9 @@
 /* ── Reset ────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  scroll-behavior: smooth;
+html, body {
+  height: 100%;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -57,7 +58,14 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   line-height: 1.55;
+}
+
+#scroll-root {
+  height: 100svh;
+  overflow-y: scroll;
   overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
 }
 
 img { max-width: 100%; display: block; }
@@ -80,6 +88,7 @@ button { font: inherit; color: inherit; }
 
 /* Sections sit above canvas; drone comes foreground after entry */
 main { position: relative; z-index: 2; }
+
 
 /* ── Typography ───────────────────────────────────────────────────── */
 h1, h2, h3, h4 {
@@ -113,8 +122,8 @@ h1, h2, h3, h4 {
 
 /* ── Layout helpers ───────────────────────────────────────────────── */
 .wrap { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 28px; }
-.section-pad { padding: 120px 0; position: relative; }
-.section-pad.tight { padding: 80px 0; }
+.section-pad { padding: 76px 0; position: relative; }
+.section-pad.tight { padding: 52px 0; }
 .divider-thin { height: 1px; background: var(--border); width: 100%; }
 
 .grid-bg {
@@ -194,13 +203,13 @@ h1, h2, h3, h4 {
 
 /* ── Display headings ─────────────────────────────────────────────── */
 .h-display {
-  font-size: clamp(40px, 6.6vw, 92px);
+  font-size: clamp(36px, 5.6vw, 76px);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 0.96;
 }
 .h-section {
-  font-size: clamp(32px, 4.4vw, 56px);
+  font-size: clamp(28px, 3.6vw, 46px);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.02;
@@ -224,13 +233,13 @@ h1, h2, h3, h4 {
 .section-head {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  gap: 60px;
-  margin-bottom: 64px;
+  gap: 44px;
+  margin-bottom: 40px;
   align-items: end;
 }
 @media (max-width: 880px) {
-  .section-head { grid-template-columns: 1fr; gap: 24px; }
-  .section-pad { padding: 80px 0; }
+  .section-head { grid-template-columns: 1fr; gap: 20px; }
+  .section-pad { padding: 56px 0; }
 }
 
 /* ── Fade-up reveal ───────────────────────────────────────────────── */
@@ -245,7 +254,6 @@ h1, h2, h3, h4 {
 footer {
   background: var(--bg-alt);
   border-top: 1px solid var(--border);
-  padding: 64px 0 32px;
   color: var(--text-mut);
 }
 

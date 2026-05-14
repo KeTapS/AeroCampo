@@ -1,45 +1,45 @@
 'use client';
 
-import FadeIn from '@/components/ui/FadeIn';
+import { useEffect, useRef, useState } from 'react';
 import CountUp from '@/components/ui/CountUp';
 
 const ADV = [
-  { icon: 'foot',   title: 'No pisamos el cultivo',    desc: 'El dron vuela sobre la parcela sin contacto con el suelo, eliminando daños mecánicos en cualquier fase.' },
+  { icon: 'foot',   title: 'No pisamos el cultivo',    desc: 'El dron vuela sobre la parcela sin contacto con el suelo, eliminando daños mecánicos.' },
   { icon: 'rain',   title: 'Acceso en terreno húmedo', desc: 'Cuando la maquinaria no puede entrar por barro, el dron opera con normalidad.' },
   { icon: 'target', title: 'Pulverización precisa',    desc: 'Gotas uniformes que penetran el dosel con precisión milimétrica.' },
-  { icon: 'drop',   title: 'Menor gasto de producto',  desc: 'Sensores de altura y dosis variable reducen el consumo hasta un 30%.' },
+  { icon: 'drop',   title: 'Menor gasto de producto',  desc: 'Dosis variable reduce el consumo hasta un 30%.' },
   { icon: 'bolt',   title: 'Mayor rapidez',            desc: 'Tratamos entre 5 y 15 ha/h en los momentos críticos de campaña.' },
   { icon: 'earth',  title: 'Sin compactación',         desc: 'Preservamos la estructura del suelo y mejoramos la salud radicular.' },
 ];
 
 const ICONS: Record<string, React.ReactNode> = {
   foot: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 21V11a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v10M5 21l-2 0M19 21l2 0" />
     </svg>
   ),
   rain: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 13v6M8 13v6M12 15v6M20 9a4 4 0 0 0-3-7 6 6 0 0 0-11.7 1A5 5 0 0 0 5 13" />
     </svg>
   ),
   target: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.4" />
     </svg>
   ),
   drop: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2.5s7 8 7 12.5a7 7 0 1 1-14 0c0-4.5 7-12.5 7-12.5z" />
     </svg>
   ),
   bolt: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
     </svg>
   ),
   earth: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="9" />
       <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
     </svg>
@@ -47,134 +47,289 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 const KPIS = [
-  ['Reducción producto fitosanitario', 30, '%'],
-  ['Cobertura por hora de vuelo',       12, ' ha/h'],
-  ['Compactación del suelo',             0, '%'],
-  ['Daño mecánico al cultivo',           0, '%'],
+  [30, '%',     'menos producto'],
+  [12, ' ha/h', 'cobertura/hora'],
+  [0,  '%',     'compactación'],
+  [0,  '%',     'daño mecánico'],
 ] as const;
 
+function phase(p: number, start: number, end: number) {
+  return Math.max(0, Math.min(1, (p - start) / (end - start)));
+}
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
 export default function AdvantagesSection() {
+  const wrapRef = useRef<HTMLElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const root = document.getElementById('scroll-root');
+    const wrap = wrapRef.current;
+    if (!root || !wrap) return;
+
+    let raf = 0;
+    function update() {
+      const rect = wrap!.getBoundingClientRect();
+      const vh   = window.innerHeight;
+      const total = rect.height - vh;
+      const p = total > 0 ? Math.max(0, Math.min(1, -rect.top / total)) : 0;
+      setProgress(p);
+    }
+    function onScroll() {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    }
+    update();
+    root.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      root.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', update);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  /* ─── Fases del recorrido ─────────────────────────────── */
+  // 0.00 → 0.04  → initial state, foto pequeña centrada
+  // 0.04 → 0.32  → zoom: la foto crece y llena el viewport
+  // 0.15 → 0.42  → entra el headline del "problema" sobre la foto
+  // 0.46 → 0.62  → la foto se oscurece y el "problema" se desvanece
+  // 0.55 → 0.80  → entra el panel de "solución" con cards + KPIs
+  // 0.80 → 1.00  → hold final (espacio para que el usuario lea sin pasar a la siguiente)
+  const zoomRaw     = phase(progress, 0.04, 0.32);
+  const zoom        = easeOut(zoomRaw);
+  const problem     = easeOut(phase(progress, 0.15, 0.42));
+  const handoff     = easeOut(phase(progress, 0.46, 0.62));
+  const solution    = easeOut(phase(progress, 0.55, 0.80));
+  const dark        = handoff;                              // oscurecido extra al final
+  const problemOut  = 1 - handoff;
+
+  /* Stagger para las 6 advantage cards (solución) */
+  function cardOpacity(i: number) {
+    const start = 0.58 + i * 0.028;
+    return easeOut(phase(progress, start, start + 0.10));
+  }
+
+  /* clip-path del marco que se abre */
+  const inset = (1 - zoom) * 22;            // 22% en cada lado al inicio
+  const radius = (1 - zoom) * 24;           // 24px radius al inicio
+
   return (
     <section
+      ref={wrapRef as any}
       id="ventajas"
       data-drone-target="advantages"
-      className="section-pad"
+      style={{ position: 'relative', height: '520svh', background: 'var(--bg)' }}
     >
-      <div className="wrap">
+      <div style={{
+        position: 'sticky', top: 0, height: '100svh',
+        overflow: 'hidden',
+      }}>
+        {/* ── Background image with clip-path expansion ── */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'url(/images/tractor-mud.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 45%',
+          clipPath: `inset(${inset}% ${inset}% ${inset}% ${inset}% round ${radius}px)`,
+          transform: `scale(${0.94 + zoom * 0.08})`,
+          willChange: 'clip-path, transform',
+        }} />
 
-        {/* Contrast banner */}
-        <FadeIn>
+        {/* Borde sutil del marco mientras está cerrado */}
+        {zoom < 0.95 && (
           <div style={{
-            position: 'relative', marginBottom: 64, borderRadius: 18,
-            overflow: 'hidden', border: '1px solid var(--border-2)',
-            aspectRatio: '21 / 7',
-            backgroundImage: 'url(/images/tractor-mud.jpg)',
-            backgroundSize: 'cover', backgroundPosition: 'center 55%',
-          }}>
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(90deg, color-mix(in oklch, var(--bg) 85%, transparent), color-mix(in oklch, var(--bg) 30%, transparent) 60%, transparent)',
-            }} />
-            <div className="ventajas-banner-copy" style={{
-              position: 'absolute', inset: 0, padding: 'clamp(20px, 4vw, 48px)',
-              display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-              maxWidth: '60%',
+            position: 'absolute',
+            top: `${inset}%`, left: `${inset}%`,
+            right: `${inset}%`, bottom: `${inset}%`,
+            borderRadius: radius,
+            boxShadow: `inset 0 0 0 1px color-mix(in oklch, var(--accent) ${30 * (1 - zoom)}%, transparent)`,
+            pointerEvents: 'none',
+          }} />
+        )}
+
+        {/* Dark overlay — se intensifica al ceder paso al panel de solución */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: `linear-gradient(180deg,
+            rgba(6,9,10,${0.30 + dark * 0.45}) 0%,
+            rgba(6,9,10,${0.15 + dark * 0.55}) 45%,
+            rgba(6,9,10,${0.55 + dark * 0.40}) 100%)`,
+          pointerEvents: 'none',
+        }} />
+
+        {/* Grid de fondo */}
+        <div className="grid-bg" style={{ opacity: 0.25, position: 'absolute', inset: 0 }} />
+
+        {/* ── PROBLEM CAPTION ── */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '0 8vw',
+          opacity: problem * problemOut,
+          transform: `translateY(${(1 - problem) * 30 - handoff * 20}px) scale(${0.96 + problem * 0.04})`,
+          pointerEvents: 'none',
+        }}>
+          <div style={{ textAlign: 'center', maxWidth: 940 }}>
+            <h2 style={{
+              fontFamily: 'var(--font-display)', fontWeight: 800,
+              fontSize: 'clamp(34px, 5.4vw, 72px)',
+              lineHeight: 1.04, letterSpacing: '-0.035em',
+              color: '#fff',
+              textShadow: '0 4px 40px rgba(0,0,0,0.85)',
             }}>
-              <span className="mono" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.18em', marginBottom: 10 }}>
-                ↘ EL PROBLEMA
-              </span>
-              <h3 style={{
-                fontFamily: 'var(--font-display)', fontWeight: 700,
-                fontSize: 'clamp(22px, 2.4vw, 34px)', lineHeight: 1.1,
-                color: 'var(--text)', letterSpacing: '-0.02em',
+              El barro detiene el tractor.<br />
+              <em style={{
+                fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+                color: 'var(--accent)', fontWeight: 400,
               }}>
-                La maquinaria pesada no entra cuando<br />
-                <em style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--accent)', fontWeight: 400 }}>
-                  la campaña no espera
-                </em>.
-              </h3>
-            </div>
+                Tu campaña no puede esperar.
+              </em>
+            </h2>
             <div className="readout" style={{
-              position: 'absolute', bottom: 18, right: 18,
-              background: 'color-mix(in oklch, var(--bg) 70%, transparent)',
-              padding: '6px 10px', borderRadius: 4,
+              marginTop: 24, display: 'inline-block',
+              background: 'rgba(6,9,10,0.75)',
+              padding: '7px 14px', borderRadius: 4,
+              fontSize: 11, letterSpacing: '0.12em',
+              backdropFilter: 'blur(6px)',
             }}>
               ● TERRENO HÚMEDO · ACCESO IMPOSIBLE
             </div>
           </div>
-        </FadeIn>
+        </div>
 
-        <div className="adv-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 80, alignItems: 'start' }}>
+        {/* ── SOLUTION PANEL ── */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center',
+          padding: 'clamp(48px, 7vh, 96px) clamp(28px, 6vw, 96px)',
+          opacity: solution,
+          transform: `translateY(${(1 - solution) * 40}px)`,
+          pointerEvents: solution > 0.6 ? 'auto' : 'none',
+        }}>
+          <div className="wrap" style={{ position: 'relative', width: '100%' }}>
+            <div className="adv-grid">
 
-          {/* Sticky left: title + KPIs */}
-          <FadeIn style={{ position: 'sticky', top: 120 }}>
-            <span className="eyebrow"><span className="num">03</span> VENTAJAS</span>
-            <h2 className="h-section" style={{ marginTop: 18 }}>
-              Dron vs.<br /><em>maquinaria pesada</em>
-            </h2>
-            <p className="lede" style={{ marginTop: 22, marginBottom: 36 }}>
-              No es el futuro: es la solución presente para agricultores que buscan eficiencia,
-              precisión y respeto por su tierra.
-            </p>
+              {/* LEFT — eyebrow + heading + lede + CTA */}
+              <div>
+                <span className="eyebrow">
+                  <span className="num">03</span> VENTAJAS
+                </span>
+                <h2 className="h-section" style={{ marginTop: 14, color: '#fff' }}>
+                  Dron vs.<br /><em>maquinaria pesada</em>
+                </h2>
+                <p className="lede" style={{ marginTop: 16, marginBottom: 28, color: 'rgba(255,255,255,0.78)' }}>
+                  No es el futuro: es la solución presente para agricultores
+                  que buscan eficiencia, precisión y respeto por su tierra.
+                </p>
 
-            <div style={{ border: '1px solid var(--border)', borderRadius: 14, background: 'var(--bg-card)', padding: 6 }}>
-              {KPIS.map(([label, val, suffix]) => (
-                <div key={label} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '14px 16px', borderBottom: '1px solid var(--border)',
+                {/* KPI strip */}
+                <div style={{
+                  display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: 12,
+                  background: 'rgba(6,9,10,0.55)',
+                  backdropFilter: 'blur(14px)',
+                  overflow: 'hidden', marginBottom: 22,
                 }}>
-                  <span className="mono" style={{ fontSize: 11.5, color: 'var(--text-mut)', letterSpacing: '0.04em' }}>
-                    {label}
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: 'var(--accent)', letterSpacing: '-0.02em' }}>
-                    <CountUp to={val} suffix={suffix} duration={2} />
-                  </span>
+                  {KPIS.map(([val, suffix, label], i) => (
+                    <div key={label} style={{
+                      padding: '14px 10px', textAlign: 'center',
+                      borderRight: i < 3 ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                    }}>
+                      <div style={{
+                        fontFamily: 'var(--font-display)', fontWeight: 800,
+                        fontSize: 'clamp(22px, 2.2vw, 30px)',
+                        color: 'var(--accent)', letterSpacing: '-0.03em', lineHeight: 1,
+                      }}>
+                        {solution > 0.5
+                          ? <CountUp to={val} suffix={suffix} duration={1.6} />
+                          : <span>0{suffix}</span>}
+                      </div>
+                      <div className="readout" style={{ marginTop: 5, fontSize: 10, color: 'rgba(255,255,255,0.6)' }}>{label}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+
+                <a href="#contacto" className="btn btn-primary">
+                  Solicitar demostración
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M13 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+
+              {/* RIGHT — 6 advantage cards stagger-revealed */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {ADV.map((a, i) => {
+                  const op = cardOpacity(i);
+                  return (
+                    <article key={a.title} className="adv-card" style={{
+                      opacity: op,
+                      transform: `translateY(${(1 - op) * 30}px)`,
+                    }}>
+                      <div className="adv-card__icon">{ICONS[a.icon]}</div>
+                      <div>
+                        <h3 style={{ fontSize: 13.5, marginBottom: 4, color: '#fff', fontWeight: 600 }}>{a.title}</h3>
+                        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12, lineHeight: 1.5 }}>{a.desc}</p>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
             </div>
-
-            <a href="#contacto" className="btn btn-primary" style={{ marginTop: 24 }}>
-              Solicitar demostración
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </a>
-          </FadeIn>
-
-          {/* Right: advantage cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {ADV.map((a, i) => (
-              <FadeIn key={a.title} delay={i * 70}>
-                <article className="card" style={{
-                  display: 'grid', gridTemplateColumns: '56px 1fr auto',
-                  gap: 20, padding: 22, alignItems: 'center',
-                }}>
-                  <div style={{
-                    width: 52, height: 52, borderRadius: 10,
-                    background: 'color-mix(in oklch, var(--accent) 14%, transparent)',
-                    border: '1px solid var(--border-2)',
-                    color: 'var(--accent)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    {ICONS[a.icon]}
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: 17, marginBottom: 4, color: 'var(--text)' }}>{a.title}</h3>
-                    <p style={{ color: 'var(--text-mut)', fontSize: 13.5, lineHeight: 1.55 }}>{a.desc}</p>
-                  </div>
-                  <span className="mono" style={{ fontSize: 11, color: 'var(--text-dim)' }}>0{i + 1}</span>
-                </article>
-              </FadeIn>
-            ))}
           </div>
+        </div>
+
+        {/* Progress indicator */}
+        <div style={{
+          position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: 4, alignItems: 'center',
+        }}>
+          {[0.10, 0.30, 0.65].map((stage, i) => (
+            <span key={i} style={{
+              width: 30, height: 2,
+              background: progress > stage ? 'var(--accent)' : 'rgba(255,255,255,0.2)',
+              transition: 'background 0.3s',
+            }} />
+          ))}
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 900px) {
-          .adv-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-          .adv-grid > *:first-child { position: static !important; }
-          .ventajas-banner-copy { max-width: 100% !important; }
+        #ventajas .adv-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.1fr;
+          gap: clamp(28px, 4vw, 60px);
+          align-items: center;
+        }
+        #ventajas .adv-card {
+          display: flex; gap: 12px; align-items: flex-start;
+          padding: 14px 16px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.10);
+          backdrop-filter: blur(14px) saturate(120%);
+          -webkit-backdrop-filter: blur(14px) saturate(120%);
+          transition: opacity 0.05s linear, transform 0.05s linear, border-color 0.3s, background 0.3s;
+        }
+        #ventajas .adv-card:hover {
+          border-color: color-mix(in oklch, var(--accent) 40%, transparent);
+          background: rgba(255,255,255,0.06);
+        }
+        #ventajas .adv-card__icon {
+          width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+          background: color-mix(in oklch, var(--accent) 18%, transparent);
+          border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent);
+          color: var(--accent);
+          display: flex; align-items: center; justify-content: center;
+        }
+        @media (max-width: 980px) {
+          #ventajas .adv-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 560px) {
+          #ventajas .adv-grid > div:last-child { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </section>

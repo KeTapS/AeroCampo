@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 // ── Section-based landing poses ──────────────────────────────────────
 const SECTION_POSES = {
-  hero:        { x:  2.4, y:  0.2, rx:  0.05, ry: Math.PI + 0.42, rz: -0.05 },
+  hero:        { x:  5.1, y: -2.35, rx:  0.05, ry: Math.PI + 0.1, rz: -0.1 },
   services:    { x: -2.6, y: -0.6, rx:  0.05, ry: Math.PI + 0.85, rz:  0.04 },
   advantages:  { x:  2.6, y: -0.2, rx:  0.04, ry: Math.PI + 0.10, rz: -0.04 },
   monitoring:  { x: -1.4, y: -0.3, rx: -0.10, ry: Math.PI + 1.10, rz:  0.02 },
@@ -20,7 +20,7 @@ type SectionName = keyof typeof SECTION_POSES;
 // ── Cinematic entry A → B → hero ─────────────────────────────────────
 const ENTRY_A = { x: 7,   y: 4,   z: -8, rx: -0.40, ry: Math.PI + 0.70, rz:  0.25, s: 0.18 };
 const ENTRY_B = { x: 1.8, y: 0.6, z: -1, rx: -0.05, ry: Math.PI + 0.55, rz: -0.05, s: 0.50 };
-const FINAL_SCALE = 0.62;
+const FINAL_SCALE = 0.48;
 const ENTRY_MS    = 3400;
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
@@ -82,10 +82,20 @@ function DroneModel({
       }
       if (/Propeller/i.test(obj.name) && (obj as THREE.Mesh).isMesh) {
         const mesh = obj as THREE.Mesh;
-        const geo  = mesh.geometry;
+        // Re-centre the geometry so the spin pivot is at the propeller's
+        // own centre (not the drone body origin, which is the default pivot)
+        const geo = mesh.geometry.clone();
         geo.computeBoundingBox();
+        const bb = geo.boundingBox!;
+        const center = new THREE.Vector3();
+        bb.getCenter(center);
+        geo.translate(-center.x, -center.y, -center.z);
+        mesh.geometry = geo;
+        // Shift the mesh position to compensate so it stays in place
+        mesh.position.add(center);
+        // Spin axis = smallest bounding-box extent (perpendicular to the disc)
         const size = new THREE.Vector3();
-        geo.boundingBox!.getSize(size);
+        bb.getSize(size);
         let axis: 'x' | 'y' | 'z' = 'y';
         if (size.x <= size.y && size.x <= size.z) axis = 'x';
         else if (size.z <= size.x && size.z <= size.y) axis = 'z';
@@ -99,7 +109,7 @@ function DroneModel({
   useFrame(() => {
     if (!groupRef.current) return;
 
-    // Propellers always spin
+    // Propellers spin around the axis perpendicular to their disc
     for (const { mesh, axis } of propRefs.current) {
       mesh.rotation[axis] += 0.55;
     }

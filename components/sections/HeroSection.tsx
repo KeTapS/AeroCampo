@@ -76,7 +76,7 @@ export default function HeroSection() {
           const local = phase(progress, w[0], w[3]);
           const scale = bg.zoomFrom + (bg.zoomTo - bg.zoomFrom) * local;
           return (
-            <div key={i} style={{
+            <div key={i} className="hero-bg-layer" style={{
               position: 'absolute', inset: 0,
               opacity: op,
               backgroundImage: `url(${bg.src})`,
@@ -255,11 +255,26 @@ export default function HeroSection() {
         /* ── Tablet & smaller (≤ 880px) — slightly tighter ─────── */
         @media (max-width: 880px) {
           .hero-section { height: 300svh; }
+          /* Disable Ken Burns zoom on touch viewports — landscape
+             photos in portrait viewports already crop heavily; the
+             extra 10-15% inline scale was making subjects feel "in
+             your face". scale(1) lets cover show the natural crop. */
+          .hero-bg-layer { transform: scale(1) !important; }
         }
 
         /* ── Phone (≤ 640px) — stats become 1×3 stack ──────────── */
         @media (max-width: 640px) {
           .hero-section { height: 260svh; }
+          /* Show ~40% of each landscape photo (vs ~28% with cover):
+             auto 70% scales the image to 70% of viewport height,
+             keeps proportions, lets sides show more context.
+             The 15% letterbox each side lands inside the dark
+             gradient zones (0-35% top, 65-100% bottom) so it stays
+             invisible. */
+          .hero-bg-layer {
+            background-size: auto 70% !important;
+            background-position: center center !important;
+          }
           .hero-stats {
             grid-template-columns: 1fr;
             max-width: 360px;

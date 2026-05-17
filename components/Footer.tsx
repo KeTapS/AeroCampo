@@ -68,8 +68,34 @@ export default function Footer() {
       </div>
 
       <style>{`
-        @media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr !important; } }
-        @media (max-width: 520px) { .foot-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 800px) {
+          .foot-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+
+        /* ── Phone — center everything ───────────────────────── */
+        @media (max-width: 640px) {
+          .foot-grid {
+            grid-template-columns: 1fr !important;
+            gap: 28px !important;
+            text-align: center;
+          }
+          .foot-grid > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .foot-grid ul {
+            align-items: center;
+          }
+          /* Bottom bar: stack and center copyright + location */
+          footer .wrap > div:last-child {
+            flex-direction: column;
+            justify-content: center !important;
+            align-items: center;
+            text-align: center;
+            gap: 6px !important;
+          }
+        }
       `}</style>
     </footer>
   );

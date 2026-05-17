@@ -290,12 +290,35 @@ export default function ServicesSection() {
           #servicios .svc-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
 
-        /* ── Phone (≤ 760px) — 1 column ────────────────────────── */
+        /* ── Phone (≤ 760px) — 1 column, drop scrollytelling ─────
+           Sticky reveal made the 3rd card fall below the fold on
+           tall mobile layouts. Convert to a normal stacked section:
+           static positioning, auto height, all cards always visible. */
         @media (max-width: 760px) {
-          .services-section { height: 240svh; }
-          #servicios .svc-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+          .services-section {
+            height: auto !important;
+            min-height: auto;
+          }
+          .services-section > div {
+            position: static !important;
+            height: auto !important;
+            padding: 56px 0 !important;
+          }
+          #servicios .section-head {
+            opacity: 1 !important;
+            transform: none !important;
+            margin-bottom: 28px !important;
+          }
+          #servicios .svc-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          #servicios .svc-card {
+            opacity: 1 !important;
+            transform: none !important;
+            padding: 18px 18px 22px !important;
+          }
           .svc-ghost { font-size: 80px !important; top: -8px !important; }
-          .svc-card  { padding: 18px 18px 22px !important; }
           /* On touch, always show the arrow at low opacity so cards feel tappable */
           .svc-arrow { opacity: 0.6 !important; transform: translate(0,0) !important; }
         }

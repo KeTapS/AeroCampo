@@ -12,7 +12,15 @@
   --font-serif:          'Instrument Serif', Georgia, serif;
 }
 
-/* ── CSS custom properties ────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   Breakpoints (mobile-first naming, used via max-width queries):
+     xs   < 480px     — small phones (iPhone SE, Galaxy S small)
+     sm   480–768px   — phones landscape, small tablets
+     md   768–1024px  — tablets, foldables unfolded
+     lg   1024–1280px — small laptops, tablet landscape
+     xl   ≥ 1280px    — desktop
+   ────────────────────────────────────────────────────────────────── */
 :root {
   --brand-deep:   #0d3f1a;
   --brand-green:  #1f7a3a;
@@ -41,6 +49,12 @@
   --font-body:    'Geist', system-ui, sans-serif;
   --font-mono:    'Geist Mono', ui-monospace, monospace;
   --font-serif:   'Instrument Serif', Georgia, serif;
+
+  /* Safe-area: read env() once at root so children just consume the var */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
 }
 
 /* ── Reset ────────────────────────────────────────────────────────── */
@@ -51,6 +65,8 @@ html, body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;        /* iOS landscape text bloat */
+  text-size-adjust: 100%;
 }
 
 body {
@@ -58,37 +74,42 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   line-height: 1.55;
+  /* Tap highlight on iOS — match accent at low alpha */
+  -webkit-tap-highlight-color: color-mix(in oklch, var(--accent) 18%, transparent);
+  overscroll-behavior-y: none;           /* kill iOS rubber-band on document */
 }
 
+/* The whole app scrolls inside this container. Snap-type intentionally
+   omitted so the cinematic Hero / Services / Advantages scrollytelling can
+   play smoothly. */
 #scroll-root {
   height: 100svh;
   overflow-y: scroll;
   overflow-x: hidden;
-  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;     /* momentum scroll iOS */
+  overscroll-behavior: contain;          /* don't bubble scroll to body */
 }
 
-img { max-width: 100%; display: block; }
+img, svg, video { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
-button { font: inherit; color: inherit; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 
-/* ── 3D Drone canvas — fixed overlay, pointer-none ─────────────── */
-#drone-canvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  transition: opacity 0.4s ease;
+/* Form controls inherit font + prevent iOS auto-zoom (font-size ≥ 16px) */
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: 16px;                       /* prevents iOS focus-zoom */
 }
-#drone-canvas canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
+textarea { resize: vertical; }
+
+/* Keyboard focus — visible but on-brand */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
-
-/* Sections sit above canvas; drone comes foreground after entry */
-main { position: relative; z-index: 2; }
-
+/* Suppress focus ring for mouse clicks (focus-visible handles keyboard) */
+:focus:not(:focus-visible) { outline: none; }
 
 /* ── Typography ───────────────────────────────────────────────────── */
 h1, h2, h3, h4 {
@@ -98,9 +119,7 @@ h1, h2, h3, h4 {
   line-height: 1.05;
 }
 
-.mono, code, kbd {
-  font-family: var(--font-mono);
-}
+.mono, code, kbd { font-family: var(--font-mono); }
 
 .label {
   font-family: var(--font-mono);
@@ -121,9 +140,17 @@ h1, h2, h3, h4 {
 }
 
 /* ── Layout helpers ───────────────────────────────────────────────── */
-.wrap { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 28px; }
-.section-pad { padding: 76px 0; position: relative; }
-.section-pad.tight { padding: 52px 0; }
+.wrap {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  /* Honor safe-area on landscape notch phones + tighter padding on small */
+  padding: 0 clamp(16px, 4vw, 28px);
+  padding-left:  max(clamp(16px, 4vw, 28px), var(--safe-left));
+  padding-right: max(clamp(16px, 4vw, 28px), var(--safe-right));
+}
+.section-pad { padding: clamp(48px, 7vw, 76px) 0; position: relative; }
+.section-pad.tight { padding: clamp(36px, 5vw, 52px) 0; }
 .divider-thin { height: 1px; background: var(--border); width: 100%; }
 
 .grid-bg {
@@ -137,29 +164,38 @@ h1, h2, h3, h4 {
 
 /* ── Buttons ──────────────────────────────────────────────────────── */
 .btn {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 10px;
   padding: 14px 22px; border-radius: 999px;
   font-family: var(--font-display); font-weight: 600; font-size: 14px;
   letter-spacing: -0.005em;
   cursor: pointer; border: 1px solid transparent;
   transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s, box-shadow 0.25s;
-  min-height: 46px; white-space: nowrap;
+  min-height: 46px;                      /* WCAG 2.5.5 tap target */
+  min-width: 46px;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;            /* removes 300ms tap delay */
 }
-.btn:hover { transform: translateY(-1px); }
+/* Hover effects only on hover-capable devices */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary:hover {
+    box-shadow: 0 14px 40px -10px color-mix(in oklch, var(--accent) 55%, transparent);
+  }
+  .btn-ghost:hover { background: var(--bg-card-2); border-color: var(--accent); }
+}
+.btn:active { transform: translateY(0); }
 
 .btn-primary {
   background: var(--accent); color: #0a1408;
   box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 40%, transparent);
 }
-.btn-primary:hover {
-  box-shadow: 0 14px 40px -10px color-mix(in oklch, var(--accent) 55%, transparent);
-}
-
 .btn-ghost {
   background: transparent; color: var(--text);
   border-color: var(--border-2);
 }
-.btn-ghost:hover { background: var(--bg-card-2); border-color: var(--accent); }
 
 /* ── Cards ────────────────────────────────────────────────────────── */
 .card {
@@ -170,7 +206,9 @@ h1, h2, h3, h4 {
   -webkit-backdrop-filter: blur(14px) saturate(120%);
   transition: border-color 0.3s, background 0.3s, transform 0.3s;
 }
-.card:hover { border-color: var(--border-2); transform: translateY(-2px); }
+@media (hover: hover) and (pointer: fine) {
+  .card:hover { border-color: var(--border-2); transform: translateY(-2px); }
+}
 
 /* ── Eyebrow ──────────────────────────────────────────────────────── */
 .eyebrow {
@@ -237,10 +275,6 @@ h1, h2, h3, h4 {
   margin-bottom: 40px;
   align-items: end;
 }
-@media (max-width: 880px) {
-  .section-head { grid-template-columns: 1fr; gap: 20px; }
-  .section-pad { padding: 56px 0; }
-}
 
 /* ── Fade-up reveal ───────────────────────────────────────────────── */
 .fade-up {
@@ -255,21 +289,52 @@ footer {
   background: var(--bg-alt);
   border-top: 1px solid var(--border);
   color: var(--text-mut);
+  padding-bottom: calc(24px + var(--safe-bottom));
 }
 
-/* ── Reduced motion ───────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS
+   ───────────────────────────────────────────────────────────────── */
+
+/* Tablet / small laptop (≤ 1024px) */
+@media (max-width: 1024px) {
+  .section-head { gap: 32px; margin-bottom: 32px; }
+}
+
+/* Tablet portrait & below (≤ 880px) */
+@media (max-width: 880px) {
+  .section-head { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* Phone (≤ 640px) */
+@media (max-width: 640px) {
+  .h-display { font-size: clamp(34px, 10vw, 56px); line-height: 1.0; }
+  .h-section { font-size: clamp(26px, 7vw, 38px); }
+  .lede      { font-size: clamp(15px, 4vw, 17px); }
+  .btn       { padding: 13px 20px; font-size: 13.5px; }
+}
+
+/* Tiny phones (≤ 380px) */
+@media (max-width: 380px) {
+  .wrap { padding: 0 14px; }
+  .h-display { font-size: 30px; }
+  .btn { padding: 12px 18px; font-size: 13px; }
+}
+
+/* Landscape phones (low height) — keep scenes legible */
+@media (max-height: 520px) and (orientation: landscape) {
+  .h-display { font-size: clamp(28px, 6vh, 44px); line-height: 1.0; }
+  .h-section { font-size: clamp(22px, 5vh, 32px); }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ───────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  html { scroll-behavior: auto; }
-}
-
-/* ── Mobile ───────────────────────────────────────────────────────── */
-@media (max-width: 760px) {
-  #drone-canvas { opacity: 0.55; }
-  .h-display { font-size: clamp(40px, 11vw, 64px); }
-  .section-head { grid-template-columns: 1fr; }
+  html, #scroll-root { scroll-behavior: auto; }
 }

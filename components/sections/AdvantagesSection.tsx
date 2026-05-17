@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import CountUp from '@/components/ui/CountUp';
+import { useScrollProgress, phase, easeOut } from '@/components/ui/useScrollProgress';
 
 const ADV = [
   { icon: 'foot',   title: 'No pisamos el cultivo',    desc: 'El dron vuela sobre la parcela sin contacto con el suelo, eliminando daños mecánicos.' },
@@ -53,41 +54,9 @@ const KPIS = [
   [0,  '%',     'daño mecánico'],
 ] as const;
 
-function phase(p: number, start: number, end: number) {
-  return Math.max(0, Math.min(1, (p - start) / (end - start)));
-}
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-
 export default function AdvantagesSection() {
-  const wrapRef = useRef<HTMLElement>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const root = document.getElementById('scroll-root');
-    const wrap = wrapRef.current;
-    if (!root || !wrap) return;
-
-    let raf = 0;
-    function update() {
-      const rect = wrap!.getBoundingClientRect();
-      const vh   = window.innerHeight;
-      const total = rect.height - vh;
-      const p = total > 0 ? Math.max(0, Math.min(1, -rect.top / total)) : 0;
-      setProgress(p);
-    }
-    function onScroll() {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    }
-    update();
-    root.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      root.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', update);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
+  const wrapRef  = useRef<HTMLElement>(null);
+  const progress = useScrollProgress(wrapRef);
 
   /* ─── Fases del recorrido ─────────────────────────────── */
   // 0.00 → 0.04  → initial state, foto pequeña centrada
@@ -116,10 +85,9 @@ export default function AdvantagesSection() {
 
   return (
     <section
-      ref={wrapRef as any}
+      ref={wrapRef as React.RefObject<HTMLElement>}
       id="ventajas"
-      data-drone-target="advantages"
-      style={{ position: 'relative', height: '520svh', background: 'var(--bg)' }}
+      className="adv-section"
     >
       <div style={{
         position: 'sticky', top: 0, height: '100svh',
@@ -199,14 +167,14 @@ export default function AdvantagesSection() {
         </div>
 
         {/* ── SOLUTION PANEL ── */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center',
-          padding: 'clamp(48px, 7vh, 96px) clamp(28px, 6vw, 96px)',
-          opacity: solution,
-          transform: `translateY(${(1 - solution) * 40}px)`,
-          pointerEvents: solution > 0.6 ? 'auto' : 'none',
-        }}>
+        <div
+          className="adv-solution"
+          style={{
+            opacity: solution,
+            transform: `translateY(${(1 - solution) * 40}px)`,
+            pointerEvents: solution > 0.6 ? 'auto' : 'none',
+          }}
+        >
           <div className="wrap" style={{ position: 'relative', width: '100%' }}>
             <div className="adv-grid">
 
@@ -224,29 +192,15 @@ export default function AdvantagesSection() {
                 </p>
 
                 {/* KPI strip */}
-                <div style={{
-                  display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  borderRadius: 12,
-                  background: 'rgba(6,9,10,0.55)',
-                  backdropFilter: 'blur(14px)',
-                  overflow: 'hidden', marginBottom: 22,
-                }}>
-                  {KPIS.map(([val, suffix, label], i) => (
-                    <div key={label} style={{
-                      padding: '14px 10px', textAlign: 'center',
-                      borderRight: i < 3 ? '1px solid rgba(255,255,255,0.12)' : 'none',
-                    }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 800,
-                        fontSize: 'clamp(22px, 2.2vw, 30px)',
-                        color: 'var(--accent)', letterSpacing: '-0.03em', lineHeight: 1,
-                      }}>
+                <div className="adv-kpis">
+                  {KPIS.map(([val, suffix, label]) => (
+                    <div key={label} className="adv-kpis__item">
+                      <div className="adv-kpis__num">
                         {solution > 0.5
                           ? <CountUp to={val} suffix={suffix} duration={1.6} />
                           : <span>0{suffix}</span>}
                       </div>
-                      <div className="readout" style={{ marginTop: 5, fontSize: 10, color: 'rgba(255,255,255,0.6)' }}>{label}</div>
+                      <div className="readout adv-kpis__label">{label}</div>
                     </div>
                   ))}
                 </div>
@@ -298,12 +252,61 @@ export default function AdvantagesSection() {
       </div>
 
       <style>{`
+        .adv-section {
+          position: relative;
+          height: 520svh;
+          background: var(--bg);
+        }
+
+        /* Solution panel wrapper */
+        #ventajas .adv-solution {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          padding: clamp(48px, 7vh, 96px) clamp(28px, 6vw, 96px);
+        }
+
         #ventajas .adv-grid {
           display: grid;
           grid-template-columns: 1fr 1.1fr;
           gap: clamp(28px, 4vw, 60px);
           align-items: center;
         }
+
+        /* KPI strip */
+        #ventajas .adv-kpis {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 12px;
+          background: rgba(6,9,10,0.55);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          overflow: hidden;
+          margin-bottom: 22px;
+        }
+        #ventajas .adv-kpis__item {
+          padding: 14px 10px;
+          text-align: center;
+          border-right: 1px solid rgba(255,255,255,0.12);
+        }
+        #ventajas .adv-kpis__item:last-child { border-right: 0; }
+        #ventajas .adv-kpis__num {
+          font-family: var(--font-display);
+          font-weight: 800;
+          font-size: clamp(22px, 2.2vw, 30px);
+          color: var(--accent);
+          letter-spacing: -0.03em;
+          line-height: 1;
+        }
+        #ventajas .adv-kpis__label {
+          margin-top: 5px;
+          font-size: 10px;
+          color: rgba(255,255,255,0.6);
+        }
+
+        /* Advantage cards */
         #ventajas .adv-card {
           display: flex; gap: 12px; align-items: flex-start;
           padding: 14px 16px;
@@ -314,9 +317,11 @@ export default function AdvantagesSection() {
           -webkit-backdrop-filter: blur(14px) saturate(120%);
           transition: opacity 0.05s linear, transform 0.05s linear, border-color 0.3s, background 0.3s;
         }
-        #ventajas .adv-card:hover {
-          border-color: color-mix(in oklch, var(--accent) 40%, transparent);
-          background: rgba(255,255,255,0.06);
+        @media (hover: hover) and (pointer: fine) {
+          #ventajas .adv-card:hover {
+            border-color: color-mix(in oklch, var(--accent) 40%, transparent);
+            background: rgba(255,255,255,0.06);
+          }
         }
         #ventajas .adv-card__icon {
           width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
@@ -325,11 +330,39 @@ export default function AdvantagesSection() {
           color: var(--accent);
           display: flex; align-items: center; justify-content: center;
         }
+
+        /* ── Tablet (≤ 980px) — stack columns, shorten section ─── */
         @media (max-width: 980px) {
-          #ventajas .adv-grid { grid-template-columns: 1fr !important; }
+          .adv-section { height: 380svh; }
+          #ventajas .adv-grid { grid-template-columns: 1fr !important; gap: 32px; }
+          #ventajas .adv-kpis { grid-template-columns: repeat(2, 1fr); }
+          #ventajas .adv-kpis__item:nth-child(2) { border-right: 0; }
+          #ventajas .adv-kpis__item:nth-child(1),
+          #ventajas .adv-kpis__item:nth-child(2) {
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+          }
         }
-        @media (max-width: 560px) {
-          #ventajas .adv-grid > div:last-child { grid-template-columns: 1fr !important; }
+
+        /* ── Phone (≤ 640px) — cards 1-col + tighter ───────────── */
+        @media (max-width: 640px) {
+          .adv-section { height: 320svh; }
+          #ventajas .adv-solution {
+            padding: 36px 16px;
+            align-items: flex-start;
+            padding-top: max(72px, env(safe-area-inset-top));  /* clear header */
+            overflow-y: auto;                                  /* allow scroll if too tall */
+          }
+          #ventajas .adv-grid > div:last-child {
+            grid-template-columns: 1fr !important;
+          }
+          #ventajas .adv-card { padding: 12px 14px; }
+          #ventajas .adv-kpis__num { font-size: 22px; }
+          #ventajas .adv-kpis__label { font-size: 9.5px; }
+        }
+
+        /* ── Landscape phones — keep content readable ──────────── */
+        @media (max-height: 520px) and (orientation: landscape) {
+          .adv-section { height: 320svh; }
         }
       `}</style>
     </section>

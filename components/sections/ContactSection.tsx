@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import FadeIn from '@/components/ui/FadeIn';
 
-const PHONE   = '+34 600 000 000';
-const TEL     = 'tel:+34600000000';
-const WA      = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
+const PHONE        = '+34 600 000 000';
+const TEL          = 'tel:+34600000000';
+const WA           = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
 const FORMSPREE_ID = 'TU_FORM_ID_AQUI';
 
 const CONTACTS = [
@@ -15,10 +15,10 @@ const CONTACTS = [
 ] as const;
 
 const FIELDS = [
-  { key: 'nombre',   label: 'Nombre',          type: 'text',  ph: 'Tu nombre' },
-  { key: 'telefono', label: 'Teléfono',         type: 'tel',   ph: '+34 ___' },
-  { key: 'email',    label: 'Email',            type: 'email', ph: 'tu@email.com' },
-  { key: 'parcela',  label: 'Parcela / Cultivo', type: 'text',  ph: 'Ej: 25 ha de cereal en Cuéllar' },
+  { key: 'nombre',   label: 'Nombre',            type: 'text',  ph: 'Tu nombre',                     autoComplete: 'name'        },
+  { key: 'telefono', label: 'Teléfono',          type: 'tel',   ph: '+34 ___',                        autoComplete: 'tel',     inputMode: 'tel'   as const },
+  { key: 'email',    label: 'Email',             type: 'email', ph: 'tu@email.com',                  autoComplete: 'email',   inputMode: 'email' as const },
+  { key: 'parcela',  label: 'Parcela / Cultivo', type: 'text',  ph: 'Ej: 25 ha de cereal en Cuéllar', autoComplete: 'off'         },
 ] as const;
 
 const ICON_PATH: Record<string, React.ReactNode> = {
@@ -55,18 +55,20 @@ export default function ContactSection() {
   return (
     <section
       id="contacto"
-      data-drone-target="contact"
       className="section-pad"
-      style={{ background: 'var(--bg-alt)', minHeight: 'calc(100svh - 185px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+      style={{
+        background: 'var(--bg-alt)',
+        minHeight: 'calc(100svh - 185px)',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}
     >
       <div className="grid-bg" style={{ opacity: 0.3 }} />
       <div className="wrap" style={{ position: 'relative' }}>
+        <div className="con-grid">
 
-        <div className="con-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60 }}>
-
-          {/* Left: pitch + contact links */}
+          {/* LEFT — pitch + contact channels */}
           <FadeIn>
-            <span className="eyebrow"><span className="num">07</span> CONTACTO</span>
+            <span className="eyebrow"><span className="num">06</span> CONTACTO</span>
             <h2 className="h-section" style={{ marginTop: 18 }}>
               Pide tu<br /><em>presupuesto sin compromiso</em>
             </h2>
@@ -75,34 +77,18 @@ export default function ContactSection() {
               Respondemos en menos de 24h con un presupuesto cerrado por hectárea.
             </p>
 
-            <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="con-channels">
               {CONTACTS.map((c) => (
                 <a key={c.label} href={c.href}
                   target={c.href.startsWith('http') ? '_blank' : undefined}
                   rel="noopener noreferrer"
-                  style={{
-                    display: 'grid', gridTemplateColumns: '44px 1fr auto',
-                    gap: 14, alignItems: 'center', padding: 16,
-                    border: '1px solid var(--border)', borderRadius: 10,
-                    background: 'var(--bg-card)', transition: 'border-color 0.2s',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--border-2)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 10,
-                    background: 'color-mix(in oklch, var(--accent) 14%, transparent)',
-                    color: 'var(--accent)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
+                  className="con-channel">
+                  <div className="con-channel__icon">
                     <Icon name={c.icon} size={18} />
                   </div>
                   <div>
-                    <div className="mono" style={{ fontSize: 11, color: 'var(--text-mut)', letterSpacing: '0.12em' }}>
-                      {c.label.toUpperCase()}
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 15, marginTop: 3, color: 'var(--text)' }}>
-                      {c.value}
-                    </div>
+                    <div className="mono con-channel__label">{c.label.toUpperCase()}</div>
+                    <div className="con-channel__value">{c.value}</div>
                   </div>
                   <Icon name="arrow" size={16} />
                 </a>
@@ -110,83 +96,50 @@ export default function ContactSection() {
             </div>
           </FadeIn>
 
-          {/* Right: form */}
+          {/* RIGHT — form */}
           <FadeIn delay={120}>
-            <form onSubmit={handleSubmit} style={{
-              padding: 28, borderRadius: 16,
-              border: '1px solid var(--border-2)',
-              background: 'var(--bg-card)',
-              backdropFilter: 'blur(14px)',
-            }}>
+            <form onSubmit={handleSubmit} className="con-form">
               {sent ? (
-                <div style={{ padding: '40px 8px', textAlign: 'center' }}>
-                  <div style={{
-                    width: 64, height: 64, margin: '0 auto 20px',
-                    borderRadius: '50%',
-                    background: 'color-mix(in oklch, var(--accent) 16%, transparent)',
-                    border: '1px solid var(--accent)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'var(--accent)',
-                  }}>
+                <div className="con-success">
+                  <div className="con-success__icon">
                     <Icon name="check" size={28} />
                   </div>
-                  <h3 style={{ fontSize: 22, marginBottom: 8, color: 'var(--text)' }}>Mensaje enviado</h3>
-                  <p style={{ color: 'var(--text-mut)' }}>Te responderemos en menos de 24h con tu presupuesto.</p>
+                  <h3 className="con-success__title">Mensaje enviado</h3>
+                  <p className="con-success__sub">
+                    Te responderemos en menos de 24h con tu presupuesto.
+                  </p>
                 </div>
               ) : (
                 <>
-                  <div className="mono" style={{ fontSize: 11, color: 'var(--text-mut)', letterSpacing: '0.14em', marginBottom: 16 }}>
-                    FORM · PRESUPUESTO
-                  </div>
-                  <div style={{ display: 'grid', gap: 14 }}>
+                  <div className="con-form__body">
                     {FIELDS.map((f) => (
-                      <label key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <span className="mono" style={{ fontSize: 10.5, color: 'var(--text-mut)', letterSpacing: '0.1em' }}>
-                          {f.label.toUpperCase()}
-                        </span>
-                        <input
-                          required
-                          type={f.type}
-                          name={f.key}
-                          placeholder={f.ph}
-                          style={{
-                            background: 'var(--bg)', color: 'var(--text)',
-                            border: '1px solid var(--border)', borderRadius: 8,
-                            padding: '12px 14px', fontSize: 14,
-                            fontFamily: 'var(--font-display)',
-                            outline: 'none', transition: 'border-color 0.2s',
-                          }}
-                          onFocus={(e) => (e.target.style.borderColor = 'var(--accent)')}
-                          onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
-                        />
-                      </label>
+                      <Field
+                        key={f.key}
+                        label={f.label}
+                        name={f.key}
+                        type={f.type}
+                        placeholder={f.ph}
+                        autoComplete={f.autoComplete}
+                        inputMode={'inputMode' in f ? f.inputMode : undefined}
+                      />
                     ))}
-                    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <span className="mono" style={{ fontSize: 10.5, color: 'var(--text-mut)', letterSpacing: '0.1em' }}>MENSAJE</span>
+                    <FieldGroup label="Mensaje">
                       <textarea
                         required
                         name="mensaje"
-                        rows={4}
+                        rows={3}
                         placeholder="¿Qué servicio necesitas y cuándo?"
-                        style={{
-                          background: 'var(--bg)', color: 'var(--text)',
-                          border: '1px solid var(--border)', borderRadius: 8,
-                          padding: '12px 14px', fontSize: 14,
-                          fontFamily: 'var(--font-display)', resize: 'vertical',
-                          outline: 'none',
-                        }}
-                        onFocus={(e) => (e.target.style.borderColor = 'var(--accent)')}
-                        onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+                        className="con-field con-field--area"
+                        autoComplete="off"
                       />
-                    </label>
+                    </FieldGroup>
                   </div>
 
-                  <button type="submit" className="btn btn-primary" style={{ marginTop: 18, width: '100%', justifyContent: 'center' }}>
-                    Enviar solicitud <Icon name="arrow" size={14} />
-                  </button>
-                  <p className="mono" style={{ fontSize: 10.5, color: 'var(--text-dim)', marginTop: 8, textAlign: 'center', letterSpacing: '0.08em' }}>
-                    RESPUESTA · &lt; 24H · TODOS LOS DÍAS LABORABLES
-                  </p>
+                  <div className="con-form__foot">
+                    <button type="submit" className="btn btn-primary con-submit">
+                      Enviar solicitud <Icon name="arrow" size={14} />
+                    </button>
+                  </div>
                 </>
               )}
             </form>
@@ -195,10 +148,197 @@ export default function ContactSection() {
       </div>
 
       <style>{`
-        @media (max-width: 900px) {
-          .con-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+        .con-grid {
+          display: grid;
+          grid-template-columns: 0.95fr 1.1fr;
+          gap: 64px;
+          align-items: start;
+        }
+        @media (max-width: 980px) {
+          .con-grid { grid-template-columns: 1fr; gap: 40px; }
+        }
+
+        /* ─── Contact channels ───────────────────────────── */
+        .con-channels {
+          margin-top: 28px;
+          display: flex; flex-direction: column; gap: 10px;
+        }
+        .con-channel {
+          display: grid; grid-template-columns: 44px 1fr auto;
+          gap: 14px; align-items: center;
+          padding: 14px 16px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: var(--bg-card);
+          color: var(--text-mut);
+          transition: border-color 0.25s, color 0.25s, background 0.25s;
+          min-height: 56px;
+          touch-action: manipulation;
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .con-channel:hover {
+            border-color: color-mix(in oklch, var(--accent) 40%, transparent);
+            background: var(--bg-card-2);
+            color: var(--text);
+          }
+        }
+        .con-channel__icon {
+          width: 40px; height: 40px; border-radius: 10px;
+          background: color-mix(in oklch, var(--accent) 14%, transparent);
+          color: var(--accent);
+          display: flex; align-items: center; justify-content: center;
+        }
+        .con-channel__label {
+          font-size: 10.5px; color: var(--text-mut);
+          letter-spacing: 0.14em;
+        }
+        .con-channel__value {
+          font-family: var(--font-display);
+          font-weight: 600; font-size: 15px;
+          color: var(--text); margin-top: 3px;
+        }
+
+        /* ─── Form chrome ─────────────────────────────────── */
+        .con-form {
+          border-radius: 16px;
+          border: 1px solid var(--border-2);
+          background:
+            radial-gradient(120% 80% at 100% 0%, color-mix(in oklch, var(--accent) 5%, transparent) 0%, transparent 60%),
+            var(--bg-card);
+          backdrop-filter: blur(14px) saturate(120%);
+          -webkit-backdrop-filter: blur(14px) saturate(120%);
+          overflow: hidden;
+        }
+        .con-form__body {
+          padding: 22px;
+          display: flex; flex-direction: column; gap: 14px;
+        }
+
+        /* ─── Field ───────────────────────────────────────── */
+        .con-fieldgroup {
+          display: flex; flex-direction: column; gap: 7px;
+        }
+        .con-field-label {
+          font-family: var(--font-mono);
+          font-size: 10.5px;
+          color: var(--text-mut);
+          letter-spacing: 0.10em;
+          text-transform: uppercase;
+        }
+        .con-field {
+          width: 100%;
+          background: var(--bg);
+          color: var(--text);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 13px 14px;
+          font-size: 16px;            /* prevents iOS focus-zoom */
+          font-family: var(--font-display);
+          letter-spacing: -0.005em;
+          outline: none;
+          transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+          min-height: 48px;           /* tap target */
+        }
+        .con-field::placeholder { color: var(--text-dim); }
+        @media (hover: hover) and (pointer: fine) {
+          .con-field:hover { border-color: var(--border-2); }
+        }
+        .con-field:focus,
+        .con-field:focus-visible {
+          border-color: var(--accent);
+          background: color-mix(in oklch, var(--accent) 3%, var(--bg));
+          box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 14%, transparent);
+          outline: none;
+        }
+        .con-field--area {
+          resize: vertical;
+          min-height: 90px;
+        }
+
+        /* ─── Submit ──────────────────────────────────────── */
+        .con-form__foot {
+          padding: 18px 22px 22px;
+          background: color-mix(in oklch, var(--bg) 35%, transparent);
+          border-top: 1px solid var(--border);
+        }
+        .con-submit {
+          width: 100%;
+          justify-content: center;
+          padding-top: 14px; padding-bottom: 14px;
+        }
+
+        /* ─── Success state ───────────────────────────────── */
+        .con-success {
+          padding: 56px 26px;
+          text-align: center;
+        }
+        .con-success__icon {
+          width: 64px; height: 64px;
+          margin: 0 auto 20px;
+          border-radius: 50%;
+          background: color-mix(in oklch, var(--accent) 16%, transparent);
+          border: 1px solid var(--accent);
+          display: flex; align-items: center; justify-content: center;
+          color: var(--accent);
+        }
+        .con-success__title {
+          font-size: 22px; font-weight: 700;
+          color: var(--text);
+          letter-spacing: -0.02em;
+          margin-bottom: 8px;
+        }
+        .con-success__sub { color: var(--text-mut); }
+
+        /* ── Phone (≤ 640px) — tighter, larger tap, no big blur ── */
+        @media (max-width: 640px) {
+          .con-form__body { padding: 18px; gap: 12px; }
+          .con-form__foot { padding: 14px 18px 18px; }
+          .con-channel { padding: 12px 14px; gap: 10px; }
+          .con-channel__value { font-size: 14.5px; }
+          .con-success { padding: 40px 20px; }
+          .con-success__icon { width: 56px; height: 56px; }
+          .con-success__title { font-size: 20px; }
+        }
+
+        /* Reduce backdrop-filter on small screens — perf on mid-range Android */
+        @media (max-width: 480px) {
+          .con-form { backdrop-filter: none; -webkit-backdrop-filter: none; }
         }
       `}</style>
     </section>
+  );
+}
+
+/* ── Field helpers ───────────────────────────────────────────── */
+function Field({ label, name, type, placeholder, autoComplete, inputMode, required = true }: {
+  label: string;
+  name: string;
+  type: string;
+  placeholder: string;
+  autoComplete?: string;
+  inputMode?: 'text' | 'tel' | 'email' | 'numeric' | 'decimal' | 'search' | 'url' | 'none';
+  required?: boolean;
+}) {
+  return (
+    <FieldGroup label={label}>
+      <input
+        className="con-field"
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        required={required}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+      />
+    </FieldGroup>
+  );
+}
+
+function FieldGroup({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="con-fieldgroup">
+      <span className="con-field-label">{label}</span>
+      {children}
+    </div>
   );
 }

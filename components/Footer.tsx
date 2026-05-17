@@ -1,7 +1,7 @@
 'use client';
 
 const COLS = [
-  ['Servicios', ['Fitosanitarios', 'Fertilización', 'Monitorización', 'Vídeo aéreo']],
+  ['Servicios', ['Fitosanitarios', 'Fertilización', 'Vídeo aéreo']],
   ['Empresa',   ['Nosotros', 'Cobertura', 'Contacto']],
   ['Legal',     ['Aviso legal', 'Privacidad', 'AESA · STS-ES']],
 ] as const;
@@ -19,8 +19,12 @@ export default function Footer() {
           marginBottom: 28,
         }}>
           {/* Brand */}
-          <div>
-            <img src="/logo.svg" alt="AeroCampo Iberia" style={{ height: 30, width: 'auto', marginBottom: 10 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <img
+              src="/logo.webp"
+              alt="AeroCampo Iberia"
+              style={{ height: 56, width: 'auto', marginBottom: 10 }}
+            />
             <p style={{ fontSize: 12.5, color: 'var(--text-dim)', lineHeight: 1.55 }}>
               Tratamientos agrícolas con drones de precisión.<br />
               Operadora AESA · Castilla y León.

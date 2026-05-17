@@ -14,11 +14,12 @@ export default function FadeIn({ children, delay = 0, className, style }: FadeIn
   const [seen, setSeen] = useState(false);
 
   useEffect(() => {
+    const root = document.getElementById('scroll-root');
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => e.isIntersecting && (setSeen(true), io.disconnect()));
       },
-      { threshold: 0.12 },
+      { threshold: 0.12, root },
     );
     if (ref.current) io.observe(ref.current);
     return () => io.disconnect();

@@ -1,8 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,         // accessibility — don't lock zoom
+  viewportFit: "cover",    // notched phones
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)",  color: "#06090a" },
+    { media: "(prefers-color-scheme: light)", color: "#06090a" },
+  ],
+  colorScheme: "dark",
+};
+
 export const metadata: Metadata = {
-  title: "AeroCampo Iberia | Tratamientos Agrícolas con Drones de Precisión",
+  title: "AeroCampo Iberia",
   description:
     "Servicios de drones agrícolas en Segovia, Valladolid y Castilla y León. Fitosanitarios, fertilización, monitorización y fotografía aérea de precisión.",
   keywords: [
@@ -60,6 +72,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script

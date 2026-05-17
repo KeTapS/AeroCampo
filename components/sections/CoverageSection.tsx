@@ -64,7 +64,6 @@ export default function CoverageSection() {
   return (
     <section
       id="cobertura"
-      data-drone-target="coverage"
       style={{ minHeight: '100svh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 0', background: 'var(--bg)' }}
     >
       <div className="wrap" style={{ position: 'relative' }}>
@@ -72,7 +71,7 @@ export default function CoverageSection() {
         {/* Header */}
         <FadeIn className="section-head" style={{ marginBottom: 32 }}>
           <div>
-            <span className="eyebrow"><span className="num">05</span> COBERTURA</span>
+            <span className="eyebrow"><span className="num">04</span> COBERTURA</span>
             <h2 className="h-section" style={{ marginTop: 14 }}>
               Volamos sobre<br /><em>Castilla y León</em>
             </h2>
@@ -233,11 +232,17 @@ export default function CoverageSection() {
           transition: fill 0.25s, stroke 0.25s, opacity 0.25s;
           cursor: pointer;
         }
-        .cov-path:hover,
         .cov-path.is-hover {
           fill: color-mix(in oklch, var(--accent) 25%, transparent);
           stroke: var(--accent);
           stroke-width: 1.6;
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .cov-path:hover {
+            fill: color-mix(in oklch, var(--accent) 25%, transparent);
+            stroke: var(--accent);
+            stroke-width: 1.6;
+          }
         }
         .cov-path.is-dim {
           opacity: 0.30;
@@ -282,12 +287,20 @@ export default function CoverageSection() {
           flex-direction: column;
           overflow: hidden;
           cursor: pointer;
+          min-height: 64px;
+          touch-action: manipulation;
         }
-        .cov-province:hover,
         .cov-province.is-hover {
           border-color: color-mix(in oklch, var(--accent) 50%, transparent);
           background: var(--bg-card-2);
           transform: translateY(-2px);
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .cov-province:hover {
+            border-color: color-mix(in oklch, var(--accent) 50%, transparent);
+            background: var(--bg-card-2);
+            transform: translateY(-2px);
+          }
         }
         .cov-province.is-base {
           background: rgba(125, 211, 91, 0.05);

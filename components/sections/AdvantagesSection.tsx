@@ -358,6 +358,14 @@ export default function AdvantagesSection() {
           #ventajas .adv-card { padding: 12px 14px; }
           #ventajas .adv-kpis__num { font-size: 22px; }
           #ventajas .adv-kpis__label { font-size: 9.5px; }
+          /* Center the CTA on phone */
+          #ventajas .adv-grid > div:first-child > .btn-primary,
+          #ventajas .adv-grid > div:first-child > a.btn {
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+          }
         }
 
         /* ── Landscape phones — keep content readable ──────────── */

@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { useScrollProgress } from '@/components/ui/useScrollProgress';
+import FadeIn from '@/components/ui/FadeIn';
 
 const SERVICES = [
   {
@@ -112,40 +113,41 @@ export default function ServicesSection() {
           </div>
 
           {/* Cards */}
-          <div className="svc-grid" style={{ display: 'grid', gap: 18, gridTemplateColumns: 'repeat(3, 1fr)' }}>
+          <div className="svc-grid">
             {SERVICES.map((s, i) => {
               const op = cardOpacity(progress, i);
               return (
-                <article
-                  key={s.num}
-                  className="svc-card"
-                  style={{
-                    opacity: op,
-                    transform: `translateY(${(1 - op) * 60}px) scale(${0.94 + op * 0.06})`,
-                    transition: 'opacity 0.05s linear, transform 0.05s linear, border-color 0.35s, box-shadow 0.35s',
-                  }}
-                >
-                  <span className="svc-accent" />
-                  <span className="svc-ghost">{s.num}</span>
-                  <div className="svc-icon">{s.icon}</div>
-                  <h3 className="svc-title">{s.title}</h3>
-                  <p className="svc-desc">{s.desc}</p>
-                  <div className="svc-divider" />
-                  <ul className="svc-specs">
-                    {s.tags.map((t) => (
-                      <li key={t}>
-                        <span className="svc-bullet" />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                  <span className="svc-arrow" aria-hidden>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M7 17L17 7" />
-                      <path d="M8 7h9v9" />
-                    </svg>
-                  </span>
-                </article>
+                <FadeIn key={s.num} delay={i * 140} className="svc-card-wrap">
+                  <article
+                    className="svc-card"
+                    style={{
+                      opacity: op,
+                      transform: `translateY(${(1 - op) * 60}px) scale(${0.94 + op * 0.06})`,
+                      transition: 'opacity 0.05s linear, transform 0.05s linear, border-color 0.35s, box-shadow 0.35s',
+                    }}
+                  >
+                    <span className="svc-accent" />
+                    <span className="svc-ghost">{s.num}</span>
+                    <div className="svc-icon">{s.icon}</div>
+                    <h3 className="svc-title">{s.title}</h3>
+                    <p className="svc-desc">{s.desc}</p>
+                    <div className="svc-divider" />
+                    <ul className="svc-specs">
+                      {s.tags.map((t) => (
+                        <li key={t}>
+                          <span className="svc-bullet" />
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="svc-arrow" aria-hidden>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M7 17L17 7" />
+                        <path d="M8 7h9v9" />
+                      </svg>
+                    </span>
+                  </article>
+                </FadeIn>
               );
             })}
           </div>
@@ -159,6 +161,18 @@ export default function ServicesSection() {
           height: 320svh;
           background: var(--bg-alt);
         }
+        /* Grid container — desktop default */
+        #servicios .svc-grid {
+          display: grid;
+          gap: 18px;
+          grid-template-columns: repeat(3, 1fr);
+        }
+        /* FadeIn wrapper around each card — keep grid layout clean */
+        #servicios .svc-card-wrap {
+          display: flex;
+          min-width: 0;     /* let the card shrink inside grid track */
+        }
+        #servicios .svc-card-wrap > .svc-card { width: 100%; }
         .svc-card {
           position: relative;
           display: flex;

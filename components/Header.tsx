@@ -5,11 +5,10 @@ import { useState, useEffect } from 'react';
 const TEL = 'tel:+34600000000';
 
 const NAV = [
-  ['Servicios',      '#servicios'],
-  ['Ventajas',       '#ventajas'],
-  ['Monitorización', '#monitorizacion'],
-  ['Cobertura',      '#cobertura'],
-  ['Nosotros',       '#nosotros'],
+  ['Servicios', '#servicios'],
+  ['Ventajas',  '#ventajas'],
+  ['Cobertura', '#cobertura'],
+  ['Nosotros',  '#nosotros'],
 ] as const;
 
 export default function Header() {
@@ -26,57 +25,68 @@ export default function Header() {
   useEffect(() => {
     const root = document.getElementById('scroll-root');
     if (!root) return;
-    const f = () => setScrolled(root.scrollTop > 30);
-    f();
-    root.addEventListener('scroll', f, { passive: true });
-    return () => root.removeEventListener('scroll', f);
+    const update = () => {
+      // Stay transparent while the cinematic Hero is on screen.
+      // Switch to the glass background only when we've scrolled past it.
+      const hero = document.getElementById('inicio');
+      if (hero) {
+        const rect = hero.getBoundingClientRect();
+        setScrolled(rect.bottom <= 80);
+      } else {
+        setScrolled(root.scrollTop > 30);
+      }
+    };
+    update();
+    root.addEventListener('scroll', update, { passive: true });
+    return () => root.removeEventListener('scroll', update);
   }, []);
 
-  return (
-    <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-      padding: scrolled ? '12px 0' : '20px 0',
-      background: scrolled ? 'color-mix(in oklch, var(--bg) 78%, transparent)' : 'transparent',
-      borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
-      backdropFilter: scrolled ? 'blur(16px)' : 'none',
-      WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-      transition: 'all 0.3s ease',
-    }}>
-      <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+  // Close mobile menu on ESC + lock body scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
 
-        <a href="#inicio" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/logo.svg" alt="AeroCampo Iberia" style={{ height: 40, width: 'auto' }} />
+  return (
+    <header
+      data-scrolled={scrolled}
+      data-open={open}
+      className="site-header"
+    >
+      <div className="wrap site-header__inner">
+        <a href="#inicio" className="site-header__brand" aria-label="AeroCampo Iberia — inicio">
+          <img src="/logo.webp" alt="AeroCampo Iberia" />
         </a>
 
-        <nav className="nav-desktop" style={{ display: 'flex', gap: 28 }}>
+        <nav className="nav-desktop" aria-label="Navegación principal">
           {NAV.map(([label, href]) => (
-            <a key={href} href={href} onClick={(e) => scrollTo(e, href)} style={{
-              fontSize: 13.5, color: 'var(--text-mut)',
-              fontFamily: 'var(--font-display)', fontWeight: 500,
-              transition: 'color 0.2s',
-            }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-mut)')}>
+            <a key={href} href={href} onClick={(e) => scrollTo(e, href)} className="nav-link">
               {label}
             </a>
           ))}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <a href="#contacto" onClick={(e) => scrollTo(e, '#contacto')} className="btn btn-primary" style={{ fontSize: 13.5, padding: '11px 18px' }}>
+        <div className="site-header__actions">
+          <a
+            href="#contacto"
+            onClick={(e) => scrollTo(e, '#contacto')}
+            className="btn btn-primary site-header__cta"
+          >
             Presupuesto
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
           </a>
-          <button onClick={() => setOpen((o) => !o)} className="menu-toggle" aria-label="Menú"
-            style={{
-              display: 'none', background: 'transparent',
-              border: '1px solid var(--border-2)', borderRadius: 999,
-              width: 44, height: 44, cursor: 'pointer',
-              alignItems: 'center', justifyContent: 'center', color: 'var(--text)',
-            }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="menu-toggle"
+            aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
               {open
                 ? <><path d="M18 6L6 18" /><path d="M6 6l12 12" /></>
                 : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
@@ -85,28 +95,145 @@ export default function Header() {
         </div>
       </div>
 
-      {open && (
-        <div style={{
-          marginTop: 12, padding: '20px 28px 28px',
-          background: 'var(--bg-alt)', borderTop: '1px solid var(--border)',
-          display: 'flex', flexDirection: 'column', gap: 14,
-        }}>
+      {/* Mobile menu drawer */}
+      <div id="mobile-menu" className="mobile-menu" hidden={!open}>
+        <nav aria-label="Navegación móvil">
           {NAV.map(([label, href]) => (
-            <a key={href} href={href} onClick={(e) => scrollTo(e, href)}
-              style={{ fontSize: 18, color: 'var(--text)', fontFamily: 'var(--font-display)', fontWeight: 600 }}>
+            <a key={href} href={href} onClick={(e) => scrollTo(e, href)} className="mobile-menu__link">
               {label}
             </a>
           ))}
-          <a href={TEL} style={{ fontSize: 14, color: 'var(--text-mut)', fontFamily: 'var(--font-mono)', marginTop: 4 }}>
-            +34 600 000 000
-          </a>
-        </div>
-      )}
+        </nav>
+        <a href={TEL} className="mobile-menu__tel">+34 600 000 000</a>
+      </div>
 
       <style>{`
+        .site-header {
+          position: fixed;
+          top: 0; left: 0; right: 0;
+          z-index: 50;
+          padding: 20px 0;
+          padding-top: max(20px, calc(20px + var(--safe-top, 0px)));
+          transition: all 0.3s ease;
+          background: transparent;
+          border-bottom: 1px solid transparent;
+        }
+        .site-header[data-scrolled="true"] {
+          padding: 12px 0;
+          padding-top: max(12px, calc(12px + var(--safe-top, 0px)));
+          background: color-mix(in oklch, var(--bg) 45%, transparent);
+          border-bottom-color: color-mix(in oklch, var(--border) 60%, transparent);
+          backdrop-filter: blur(14px) saturate(140%);
+          -webkit-backdrop-filter: blur(14px) saturate(140%);
+        }
+        /* When mobile menu is open, give it solid bg for legibility */
+        .site-header[data-open="true"] {
+          background: var(--bg);
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+        }
+
+        .site-header__inner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+        }
+        .site-header__brand {
+          display: flex; align-items: center;
+          flex-shrink: 0;
+        }
+        .site-header__brand img {
+          height: 56px;
+          width: auto;
+        }
+
+        .nav-desktop {
+          display: flex;
+          gap: 28px;
+        }
+        .nav-link {
+          font-size: 13.5px;
+          color: var(--text-mut);
+          font-family: var(--font-display);
+          font-weight: 500;
+          transition: color 0.2s;
+          padding: 8px 0;          /* bigger tap target */
+        }
+        @media (hover: hover) and (pointer: fine) {
+          .nav-link:hover { color: var(--text); }
+        }
+
+        .site-header__actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .site-header__cta {
+          font-size: 13.5px;
+          padding: 11px 18px;
+          min-height: 42px;
+        }
+
+        .menu-toggle {
+          display: none;
+          width: 44px; height: 44px;
+          border-radius: 999px;
+          border: 1px solid var(--border-2);
+          color: var(--text);
+          align-items: center;
+          justify-content: center;
+          touch-action: manipulation;
+        }
+
+        /* Mobile menu drawer */
+        .mobile-menu {
+          margin-top: 12px;
+          padding: 12px clamp(16px, 4vw, 28px) calc(28px + var(--safe-bottom, 0px));
+          padding-left:  max(clamp(16px, 4vw, 28px), var(--safe-left, 0px));
+          padding-right: max(clamp(16px, 4vw, 28px), var(--safe-right, 0px));
+          background: var(--bg-alt);
+          border-top: 1px solid var(--border);
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .mobile-menu nav {
+          display: flex; flex-direction: column;
+        }
+        .mobile-menu__link {
+          display: block;
+          padding: 14px 6px;
+          font-size: 17px;
+          color: var(--text);
+          font-family: var(--font-display);
+          font-weight: 600;
+          border-bottom: 1px solid var(--border);
+        }
+        .mobile-menu__link:last-of-type { border-bottom: 0; }
+        .mobile-menu__tel {
+          margin-top: 12px;
+          padding: 12px 6px 4px;
+          font-size: 14px;
+          color: var(--text-mut);
+          font-family: var(--font-mono);
+        }
+
+        /* ── Tablet / Phone ── */
         @media (max-width: 880px) {
-          .nav-desktop { display: none !important; }
-          .menu-toggle { display: inline-flex !important; }
+          .nav-desktop { display: none; }
+          .menu-toggle { display: inline-flex; }
+        }
+        @media (max-width: 640px) {
+          .site-header { padding: 14px 0; }
+          .site-header[data-scrolled="true"] { padding: 10px 0; }
+          .site-header__brand img { height: 44px; }
+          .site-header__cta { font-size: 13px; padding: 10px 14px; min-height: 40px; }
+        }
+        @media (max-width: 380px) {
+          .site-header__brand img { height: 38px; }
+          .site-header__cta { padding: 9px 12px; }
+          .site-header__cta svg { display: none; }   /* save space on tiny */
         }
       `}</style>
     </header>

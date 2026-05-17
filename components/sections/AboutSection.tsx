@@ -2,18 +2,10 @@
 
 import FadeIn from '@/components/ui/FadeIn';
 
-const CERTS = [
-  ['AESA',  'Operadora STS-ES'],
-  ['ITRAD', 'Centro autorizado'],
-  ['DJI',   'Partner agroprofesional'],
-  ['UE-12', 'Seguro RC 1M€'],
-] as const;
-
 export default function AboutSection() {
   return (
     <section
       id="nosotros"
-      data-drone-target="about"
       className="section-pad"
       style={{ background: 'var(--bg-alt)', minHeight: '100svh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
@@ -24,27 +16,15 @@ export default function AboutSection() {
 
           {/* Left: copy + certs */}
           <FadeIn>
-            <span className="eyebrow"><span className="num">06</span> NOSOTROS</span>
+            <span className="eyebrow"><span className="num">05</span> NOSOTROS</span>
             <h2 className="h-section" style={{ marginTop: 18 }}>
-              Ingeniería <em>al servicio</em><br />del campo
+              Tecnología <em>al servicio</em><br />del campo
             </h2>
             <p className="lede" style={{ marginTop: 20 }}>
-              AeroCampo Iberia nace en Castilla y León con una misión sencilla: aplicar tecnología seria al cultivo de
-              cereal, viña y oleaginosas. Equipo joven, pilotos AESA, ingenieros agrónomos. Trabajamos con grandes y
-              pequeñas explotaciones — al mismo precio por hectárea.
+              AeroCampo Iberia nace en Castilla y León con una misión sencilla: llevar el dron a cada
+              parcela. Pilotos AESA certificados y operativos en toda la comunidad. Trabajamos con
+              cualquier cultivo y con cualquier tamaño de explotación — al mismo precio por hectárea.
             </p>
-
-            <div style={{ marginTop: 28, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {CERTS.map(([k, v]) => (
-                <div key={k} style={{
-                  padding: 18, borderRadius: 10,
-                  border: '1px solid var(--border)', background: 'var(--bg-card)',
-                }}>
-                  <div className="mono" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.14em' }}>{k}</div>
-                  <div style={{ marginTop: 6, fontSize: 13.5, color: 'var(--text)' }}>{v}</div>
-                </div>
-              ))}
-            </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap' }}>
               <a href="#contacto" className="btn btn-primary">
@@ -97,18 +77,23 @@ export default function AboutSection() {
         #nosotros video {
           transition: filter 0.4s ease;
         }
-        #nosotros [style*='position: relative'][style*='borderRadius'] {
-          cursor: pointer;
-          transition: box-shadow 0.35s;
-        }
-        #nosotros [style*='position: relative'][style*='borderRadius']:hover {
-          box-shadow: 0 28px 70px -18px color-mix(in oklch, var(--accent) 55%, transparent) !important;
-        }
-        #nosotros [style*='position: relative'][style*='borderRadius']:hover video {
-          filter: brightness(1.08);
+        @media (hover: hover) and (pointer: fine) {
+          #nosotros [style*='position: relative'][style*='borderRadius'] {
+            cursor: pointer;
+            transition: box-shadow 0.35s;
+          }
+          #nosotros [style*='position: relative'][style*='borderRadius']:hover {
+            box-shadow: 0 28px 70px -18px color-mix(in oklch, var(--accent) 55%, transparent) !important;
+          }
+          #nosotros [style*='position: relative'][style*='borderRadius']:hover video {
+            filter: brightness(1.08);
+          }
         }
         @media (max-width: 900px) {
           .about-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+        @media (max-width: 640px) {
+          .about-grid { gap: 28px !important; }
         }
       `}</style>
     </section>

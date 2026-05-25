@@ -56,8 +56,8 @@ const KPIS = [
 
 export default function AdvantagesSection() {
   const wrapRef  = useRef<HTMLElement>(null);
-  // Same 0.10 lerp as Services (silky 60fps continuous motion).
-  const progress = useSmoothScrollProgress(wrapRef, 0.10);
+  // Match Services exactly (0.08) — same silky 60fps feel.
+  const progress = useSmoothScrollProgress(wrapRef, 0.08);
 
   /* ─── Fases del recorrido ─────────────────────────────── */
   // 0.00 → 0.04  → initial state, foto pequeña centrada
@@ -83,9 +83,10 @@ export default function AdvantagesSection() {
     return easeOut(phase(progress, start, start + 0.10));
   }
 
-  /* clip-path del marco que se abre */
-  const inset = (1 - zoom) * 22;            // 22% en cada lado al inicio
-  const radius = (1 - zoom) * 24;           // 24px radius al inicio
+  /* clip-path del marco que se abre — reducido para sentirse pulido,
+     no dramático. Frame inicial: 16% inset (vs 22% antes), 18px radius. */
+  const inset = (1 - zoom) * 16;
+  const radius = (1 - zoom) * 18;
 
   return (
     <section
@@ -104,7 +105,7 @@ export default function AdvantagesSection() {
           backgroundSize: 'cover',
           backgroundPosition: 'center 45%',
           clipPath: `inset(${inset}% ${inset}% ${inset}% ${inset}% round ${radius}px)`,
-          transform: `scale(${0.94 + zoom * 0.08})`,
+          transform: `scale(${0.97 + zoom * 0.04})`,   // 0.97 → 1.01, subtler
           willChange: 'clip-path, transform',
         }} />
 

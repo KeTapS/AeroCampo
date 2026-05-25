@@ -1,8 +1,8 @@
 'use client';
 
-import { ReactNode, useRef, useState, useEffect } from 'react';
+import { ReactNode, useRef } from 'react';
 import CountUp from '@/components/ui/CountUp';
-import { useScrollProgress, phase, trap } from '@/components/ui/useScrollProgress';
+import { useSmoothScrollProgress, phase, trap } from '@/components/ui/useScrollProgress';
 
 const WA = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
 
@@ -26,37 +26,11 @@ const BGS = [
 ];
 
 export default function HeroSection() {
-  const wrapRef = useRef<HTMLElement>(null);
-  const rawProgress = useScrollProgress(wrapRef);
-
-  /* Smooth the raw scroll progress with a continuous lerp loop.
-     The animation loop runs always; target updates separately.
-     This avoids gaps caused by cancelling/restarting on each tick. */
-  const [progress, setProgress] = useState(0);
-  const rafRef    = useRef<number | null>(null);
-  const curRef    = useRef(0);
-  const targetRef = useRef(0);
-
-  // Keep target in sync with raw scroll — no animation side‑effects
-  useEffect(() => {
-    targetRef.current = rawProgress;
-  }, [rawProgress]);
-
-  // Single persistent rAF loop — never gets cancelled mid‑flight
-  useEffect(() => {
-    const tick = () => {
-      const diff = targetRef.current - curRef.current;
-      if (Math.abs(diff) >= 0.0003) {
-        curRef.current += diff * 0.07;   // lower = silkier
-        setProgress(curRef.current);
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+  const wrapRef  = useRef<HTMLElement>(null);
+  // Smoothed scroll progress — 60fps lerp interpolation hides discrete
+  // mouse-wheel steps so the crossfade between scenes flows silkily
+  // regardless of scroll speed.
+  const progress = useSmoothScrollProgress(wrapRef, 0.07);
 
   const o1 = trap(progress, ...SCENES.s1);
   const o2 = trap(progress, ...SCENES.s2);

@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import CountUp from '@/components/ui/CountUp';
-import { useScrollProgress, phase, easeOut } from '@/components/ui/useScrollProgress';
+import { useSmoothScrollProgress, phase, easeOut } from '@/components/ui/useScrollProgress';
 
 const ADV = [
   { icon: 'foot',   title: 'No pisamos el cultivo',    desc: 'El dron vuela sobre la parcela sin contacto con el suelo, eliminando daños mecánicos.' },
@@ -56,7 +56,8 @@ const KPIS = [
 
 export default function AdvantagesSection() {
   const wrapRef  = useRef<HTMLElement>(null);
-  const progress = useScrollProgress(wrapRef);
+  // Smoothed scroll progress — silky animations even with slow mouse scroll
+  const progress = useSmoothScrollProgress(wrapRef, 0.08);
 
   /* ─── Fases del recorrido ─────────────────────────────── */
   // 0.00 → 0.04  → initial state, foto pequeña centrada
@@ -315,7 +316,7 @@ export default function AdvantagesSection() {
           border: 1px solid rgba(255,255,255,0.10);
           backdrop-filter: blur(14px) saturate(120%);
           -webkit-backdrop-filter: blur(14px) saturate(120%);
-          transition: opacity 0.05s linear, transform 0.05s linear, border-color 0.3s, background 0.3s;
+          transition: border-color 0.3s, background 0.3s;
         }
         @media (hover: hover) and (pointer: fine) {
           #ventajas .adv-card:hover {

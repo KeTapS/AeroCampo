@@ -56,11 +56,8 @@ const KPIS = [
 
 export default function AdvantagesSection() {
   const wrapRef  = useRef<HTMLElement>(null);
-  // 60fps lerp like Services, but with a higher factor (0.13 vs 0.08)
-  // so the trail is much shorter (~150-200ms instead of ~500ms).
-  // Strikes the balance between Services-like fluidity and snappy
-  // response on the strong clip-path geometric change.
-  const progress = useSmoothScrollProgress(wrapRef, 0.13);
+  // Same 0.10 lerp as Services (silky 60fps continuous motion).
+  const progress = useSmoothScrollProgress(wrapRef, 0.10);
 
   /* ─── Fases del recorrido ─────────────────────────────── */
   // 0.00 → 0.04  → initial state, foto pequeña centrada
@@ -69,8 +66,11 @@ export default function AdvantagesSection() {
   // 0.46 → 0.62  → la foto se oscurece y el "problema" se desvanece
   // 0.55 → 0.80  → entra el panel de "solución" con cards + KPIs
   // 0.80 → 1.00  → hold final (espacio para que el usuario lea sin pasar a la siguiente)
-  const zoomRaw     = phase(progress, 0.04, 0.32);
-  const zoom        = easeOut(zoomRaw);
+  // zoom = LINEAR (no easing). Scroll-driven geometric expansion
+  // needs to feel proportional to user input; easeOut here was
+  // doing 87% of the visual change in the first 50% of the scroll
+  // range, which read as an aceleration + parón = "salto a mitad".
+  const zoom        = phase(progress, 0.04, 0.32);
   const problem     = easeOut(phase(progress, 0.15, 0.42));
   const handoff     = easeOut(phase(progress, 0.46, 0.62));
   const solution    = easeOut(phase(progress, 0.55, 0.80));

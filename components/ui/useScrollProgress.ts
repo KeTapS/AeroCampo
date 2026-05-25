@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 
 /**
  * Returns a value 0..1 representing how far the user has scrolled THROUGH
@@ -41,6 +41,49 @@ export function useScrollProgress(ref: RefObject<HTMLElement | null>) {
       cancelAnimationFrame(raf);
     };
   }, [ref]);
+
+  return progress;
+}
+
+/**
+ * Same as `useScrollProgress` but interpolates the value toward the
+ * raw scroll position every frame via a lerp. Smooths out the discrete
+ * jumps from mouse-wheel scroll so scroll-driven animations look fluid
+ * even when the user is barely turning the wheel.
+ *
+ *  smoothing: lerp factor per frame (0..1). Lower = silkier but more
+ *             "trailing" feel. 0.08 is a good default for 60fps.
+ */
+export function useSmoothScrollProgress(
+  ref: RefObject<HTMLElement | null>,
+  smoothing = 0.08,
+) {
+  const raw = useScrollProgress(ref);
+  const [progress, setProgress] = useState(0);
+
+  const rafRef    = useRef<number | null>(null);
+  const curRef    = useRef(0);
+  const targetRef = useRef(0);
+
+  // Keep target in sync with raw scroll — no animation side-effects.
+  useEffect(() => { targetRef.current = raw; }, [raw]);
+
+  // Single persistent rAF loop that interpolates current → target.
+  // Survives target changes (no cancel/restart per tick = no gaps).
+  useEffect(() => {
+    const tick = () => {
+      const diff = targetRef.current - curRef.current;
+      if (Math.abs(diff) >= 0.0003) {
+        curRef.current += diff * smoothing;
+        setProgress(curRef.current);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [smoothing]);
 
   return progress;
 }

@@ -43,3 +43,9 @@ next-env.d.ts
 # design reference files
 /design_bundle
 design_temp.html
+
+# OpenNext / Cloudflare
+/.open-next/
+/.wrangler/
+.dev.vars
+.dev.vars.*

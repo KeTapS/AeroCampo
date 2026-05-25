@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import CountUp from '@/components/ui/CountUp';
-import { useScrollProgress, phase, easeOut } from '@/components/ui/useScrollProgress';
+import { useSmoothScrollProgress, phase, easeOut } from '@/components/ui/useScrollProgress';
 
 const ADV = [
   { icon: 'foot',   title: 'No pisamos el cultivo',    desc: 'El dron vuela sobre la parcela sin contacto con el suelo, eliminando daños mecánicos.' },
@@ -56,11 +56,11 @@ const KPIS = [
 
 export default function AdvantagesSection() {
   const wrapRef  = useRef<HTMLElement>(null);
-  // Raw scroll progress — clip-path expansion needs immediate response.
-  // Fluidity comes from CSS transitions on the styled elements (below),
-  // which low-pass-filter each frame's update without the trailing
-  // inertia of a JS lerp.
-  const progress = useScrollProgress(wrapRef);
+  // 60fps lerp like Services, but with a higher factor (0.13 vs 0.08)
+  // so the trail is much shorter (~150-200ms instead of ~500ms).
+  // Strikes the balance between Services-like fluidity and snappy
+  // response on the strong clip-path geometric change.
+  const progress = useSmoothScrollProgress(wrapRef, 0.13);
 
   /* ─── Fases del recorrido ─────────────────────────────── */
   // 0.00 → 0.04  → initial state, foto pequeña centrada
@@ -106,7 +106,6 @@ export default function AdvantagesSection() {
           clipPath: `inset(${inset}% ${inset}% ${inset}% ${inset}% round ${radius}px)`,
           transform: `scale(${0.94 + zoom * 0.08})`,
           willChange: 'clip-path, transform',
-          transition: 'clip-path 0.18s cubic-bezier(0.22, 1, 0.36, 1), transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
         }} />
 
         {/* Borde sutil del marco mientras está cerrado */}
@@ -118,7 +117,6 @@ export default function AdvantagesSection() {
             borderRadius: radius,
             boxShadow: `inset 0 0 0 1px color-mix(in oklch, var(--accent) ${30 * (1 - zoom)}%, transparent)`,
             pointerEvents: 'none',
-            transition: 'top 0.18s cubic-bezier(0.22, 1, 0.36, 1), left 0.18s cubic-bezier(0.22, 1, 0.36, 1), right 0.18s cubic-bezier(0.22, 1, 0.36, 1), bottom 0.18s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease',
           }} />
         )}
 
@@ -143,7 +141,6 @@ export default function AdvantagesSection() {
           opacity: problem * problemOut,
           transform: `translateY(${(1 - problem) * 30 - handoff * 20}px) scale(${0.96 + problem * 0.04})`,
           pointerEvents: 'none',
-          transition: 'opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
         }}>
           <div style={{ textAlign: 'center', maxWidth: 940 }}>
             <h2 style={{
@@ -180,7 +177,6 @@ export default function AdvantagesSection() {
             opacity: solution,
             transform: `translateY(${(1 - solution) * 40}px)`,
             pointerEvents: solution > 0.6 ? 'auto' : 'none',
-            transition: 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
           <div className="wrap" style={{ position: 'relative', width: '100%' }}>
@@ -323,11 +319,9 @@ export default function AdvantagesSection() {
           border: 1px solid rgba(255,255,255,0.10);
           backdrop-filter: blur(14px) saturate(120%);
           -webkit-backdrop-filter: blur(14px) saturate(120%);
-          transition:
-            opacity 0.2s ease,
-            transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-            border-color 0.3s,
-            background 0.3s;
+          /* opacity/transform driven by lerped progress at 60fps —
+             only hover transitions live in CSS */
+          transition: border-color 0.3s, background 0.3s;
         }
         @media (hover: hover) and (pointer: fine) {
           #ventajas .adv-card:hover {

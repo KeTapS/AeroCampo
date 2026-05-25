@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { useScrollProgress } from '@/components/ui/useScrollProgress';
+import { useSmoothScrollProgress, easeOut } from '@/components/ui/useScrollProgress';
 import FadeIn from '@/components/ui/FadeIn';
 
 const SERVICES = [
@@ -65,12 +65,13 @@ const STEP_GAP   = 0.18;
 function cardOpacity(progress: number, i: number) {
   const start = STEP_START + i * STEP_GAP;
   const end   = start + STEP_LEN;
-  return Math.max(0, Math.min(1, (progress - start) / (end - start)));
+  const raw   = Math.max(0, Math.min(1, (progress - start) / (end - start)));
+  return easeOut(raw);   // cubic ease-out — natural fade-in curve
 }
 
 export default function ServicesSection() {
-  const wrapRef = useRef<HTMLElement>(null);
-  const progress = useScrollProgress(wrapRef);
+  const wrapRef  = useRef<HTMLElement>(null);
+  const progress = useSmoothScrollProgress(wrapRef);   // lerped @ 60fps
 
   /* Header reveal: 0 → 0.08 */
   const headProgress = Math.max(0, Math.min(1, progress / 0.08));
@@ -123,7 +124,7 @@ export default function ServicesSection() {
                     style={{
                       opacity: op,
                       transform: `translateY(${(1 - op) * 60}px) scale(${0.94 + op * 0.06})`,
-                      transition: 'opacity 0.05s linear, transform 0.05s linear, border-color 0.35s, box-shadow 0.35s',
+                      transition: 'border-color 0.35s, box-shadow 0.35s',
                     }}
                   >
                     <span className="svc-accent" />

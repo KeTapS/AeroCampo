@@ -23,7 +23,7 @@ export default function AboutSection() {
             <p className="lede" style={{ marginTop: 20 }}>
               AeroCampo Iberia nace en Castilla y León con una misión sencilla: llevar el dron a cada
               parcela. Pilotos AESA certificados y operativos en toda la comunidad. Trabajamos con
-              cualquier cultivo y con cualquier tamaño de explotación — al mismo precio por hectárea.
+              cualquier cultivo y con cualquier tamaño de explotación.
             </p>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap' }}>

@@ -1,7 +1,7 @@
 'use client';
 
-const WA  = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
-const TEL = 'tel:+34600000000';
+const WA  = 'https://wa.me/34615325317?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
+const TEL = 'tel:+34615325317';
 
 export default function FloatingButtons() {
   return (

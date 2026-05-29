@@ -3,7 +3,7 @@
 import { ReactNode, useRef } from 'react';
 import { useSmoothScrollProgress, phase, trap } from '@/components/ui/useScrollProgress';
 
-const WA = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
+const WA = 'https://wa.me/34615325317?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
 
 const STATS = [
   { value: 'Planificación GPS',  label: 'rutas de aplicación controladas' },

@@ -16,15 +16,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "AeroCampo Iberia",
   description:
-    "Servicios de drones agrícolas en Segovia, Valladolid y Castilla y León. Fitosanitarios, fertilización, monitorización y fotografía aérea de precisión.",
+    "Tratamientos agrícolas con drones DJI en toda España. Aplicación aérea de fitosanitarios, fertilización y esparcido de precisión. Pilotos AESA certificados.",
   keywords: [
-    "drones agrícolas Segovia",
-    "drones agrícolas Valladolid",
-    "drones Castilla y León",
-    "tratamientos fitosanitarios dron",
+    "drones agrícolas España",
+    "tratamientos agrícolas con drones",
+    "pulverización con drones DJI",
+    "DJI Agras",
+    "aplicación aérea fitosanitarios",
     "agricultura de precisión",
-    "fertilización dron",
-    "monitorización cultivos",
+    "fertilización con drones",
+    "pilotos AESA",
     "AeroCampo Iberia",
   ],
   authors: [{ name: "AeroCampo Iberia" }],
@@ -34,13 +35,13 @@ export const metadata: Metadata = {
     locale: "es_ES",
     title: "AeroCampo Iberia | Drones Agrícolas de Precisión",
     description:
-      "Tratamientos agrícolas con drones en Segovia, Valladolid y Castilla y León. Precisión, rapidez y sin pisar el cultivo.",
+      "Tratamientos agrícolas con drones DJI en toda España. Precisión, rapidez y sin pisar el cultivo.",
     siteName: "AeroCampo Iberia",
   },
   twitter: {
     card: "summary_large_image",
     title: "AeroCampo Iberia | Drones Agrícolas",
-    description: "Servicios de drones agrícolas en Castilla y León.",
+    description: "Tratamientos agrícolas con drones DJI en toda España.",
   },
   robots: { index: true, follow: true },
 };
@@ -50,19 +51,15 @@ const schemaOrg = {
   "@type": "LocalBusiness",
   name: "AeroCampo Iberia",
   description:
-    "Servicios de drones agrícolas de precisión: fitosanitarios, fertilización, monitorización y fotografía aérea.",
-  areaServed: [
-    { "@type": "City", name: "Segovia" },
-    { "@type": "City", name: "Valladolid" },
-    { "@type": "AdministrativeArea", name: "Castilla y León" },
-  ],
+    "Tratamientos agrícolas con drones DJI: aplicación aérea de fitosanitarios, fertilización y esparcido de precisión.",
+  areaServed: { "@type": "Country", name: "España" },
   serviceType: [
-    "Tratamientos fitosanitarios con drones",
-    "Fertilización de precisión",
-    "Monitorización de cultivos",
-    "Fotografía y vídeo aéreo agrícola",
+    "Aplicación aérea de tratamientos con drones",
+    "Pulverización agrícola de precisión",
+    "Fertilización y esparcido agrícola",
   ],
-  telephone: "+34600000000",
+  email: "aerocampoiberia@gmail.com",
+  telephone: "+34615325317",
   priceRange: "€€",
 };
 

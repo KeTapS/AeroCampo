@@ -3,15 +3,17 @@
 import { ReactNode, useState } from 'react';
 import FadeIn from '@/components/ui/FadeIn';
 
-const PHONE        = '+34 600 000 000';
-const TEL          = 'tel:+34600000000';
-const WA           = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
+const PHONE        = '+34 615 325 317';
+const TEL          = 'tel:+34615325317';
+const WA           = 'https://wa.me/34615325317?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
+const EMAIL        = 'aerocampoiberia@gmail.com';
+const MAILTO       = 'mailto:aerocampoiberia@gmail.com';
 const FORMSPREE_ID = 'TU_FORM_ID_AQUI';
 
 const CONTACTS = [
-  { icon: 'phone', label: 'Teléfono', value: PHONE,                href: TEL },
-  { icon: 'chat',  label: 'WhatsApp', value: '+34 600 000 000',    href: WA },
-  { icon: 'pin',   label: 'Base',     value: 'Segovia · Castilla y León', href: '#cobertura' },
+  { icon: 'phone', label: 'Teléfono', value: PHONE,  href: TEL },
+  { icon: 'chat',  label: 'WhatsApp', value: PHONE,  href: WA },
+  { icon: 'mail',  label: 'Email',    value: EMAIL,  href: MAILTO },
 ] as const;
 
 const FIELDS = [
@@ -24,7 +26,7 @@ const FIELDS = [
 const ICON_PATH: Record<string, React.ReactNode> = {
   phone: <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />,
   chat:  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />,
-  pin:   <><path d="M20 10c0 7-8 13-8 13S4 17 4 10a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></>,
+  mail:  <><rect x="2.5" y="4.5" width="19" height="15" rx="2" /><path d="m3 6.5 9 6 9-6" /></>,
   arrow: <path d="M5 12h14M13 5l7 7-7 7" />,
   check: <path d="M20 6L9 17l-5-5" />,
 };

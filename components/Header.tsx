@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-const TEL = 'tel:+34600000000';
+const TEL = 'tel:+34615325317';
 
 const NAV = [
   ['Servicios', '#servicios'],
@@ -104,7 +104,7 @@ export default function Header() {
             </a>
           ))}
         </nav>
-        <a href={TEL} className="mobile-menu__tel">+34 600 000 000</a>
+        <a href={TEL} className="mobile-menu__tel">+34 615 325 317</a>
       </div>
 
       <style>{`

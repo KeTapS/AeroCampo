@@ -1,12 +1,30 @@
 'use client';
 
 const COLS = [
-  ['Servicios', ['Fitosanitarios', 'Fertilización', 'Vídeo aéreo']],
-  ['Empresa',   ['Nosotros', 'Cobertura', 'Contacto']],
-  ['Legal',     ['Aviso legal', 'Privacidad', 'AESA · STS-ES']],
+  ['Servicios', [
+    ['Tratamientos', '#servicios'],
+    ['Fertilización', '#servicios'],
+    ['Vídeo aéreo', '#servicios'],
+  ]],
+  ['Empresa', [
+    ['Nosotros', '#nosotros'],
+    ['Cobertura', '#cobertura'],
+    ['Contacto', '#contacto'],
+  ]],
+  ['Legal', [
+    ['Aviso legal', '#'],
+    ['Privacidad', '#'],
+    ['AESA · STS-ES', '#'],
+  ]],
 ] as const;
 
 export default function Footer() {
+  function scrollTo(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (href === '#') return;          // legal links — no target yet
+    e.preventDefault();
+    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   return (
     <footer style={{ position: 'relative', zIndex: 5, padding: '36px 0 24px' }}>
       <div className="wrap">
@@ -26,8 +44,8 @@ export default function Footer() {
               style={{ height: 56, width: 'auto', marginBottom: 10 }}
             />
             <p style={{ fontSize: 12.5, color: 'var(--text-dim)', lineHeight: 1.55 }}>
-              Tratamientos agrícolas con drones de precisión.<br />
-              Operadora AESA · Castilla y León.
+              Tratamientos agrícolas con drones DJI de precisión.<br />
+              Operadora AESA · Cobertura nacional.
             </p>
           </div>
 
@@ -38,13 +56,14 @@ export default function Footer() {
                 {title.toUpperCase()}
               </div>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
-                {items.map((item) => (
-                  <li key={item}>
-                    <a href="#"
+                {items.map(([label, href]) => (
+                  <li key={label}>
+                    <a href={href}
+                      onClick={(e) => scrollTo(e, href)}
                       style={{ fontSize: 13, color: 'var(--text-dim)', transition: 'color 0.2s' }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-mut)')}
                       onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-dim)')}>
-                      {item}
+                      {label}
                     </a>
                   </li>
                 ))}
@@ -62,7 +81,7 @@ export default function Footer() {
             © 2026 AEROCAMPO IBERIA · TODOS LOS DERECHOS RESERVADOS
           </span>
           <span className="mono" style={{ fontSize: 10.5, color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
-            CASTILLA Y LEÓN · ESPAÑA
+            COBERTURA NACIONAL · ESPAÑA
           </span>
         </div>
       </div>

@@ -23,9 +23,9 @@ const SERVICES = [
         <path d="M13.5 16v2" opacity="0.55" />
       </svg>
     ),
-    title: 'Tratamientos fitosanitarios',
-    desc:  'Aplicación precisa de pesticidas, herbicidas y fungicidas con drones multirrotor. Cobertura homogénea, sin manchas y con mínima deriva.',
-    tags:  ['Pulverización electrostática', 'Dosis variable'],
+    title: 'Aplicación aérea de tratamientos',
+    desc:  'Servicio con DJI Agras T70P para aplicar tratamientos agrícolas sobre cultivos, adaptando dosis, caudal y planificación de vuelo a cada parcela.',
+    tags:  ['Planificación GPS', 'Caudal regulable'],
   },
   {
     num: '02',
@@ -37,9 +37,9 @@ const SERVICES = [
         <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
       </svg>
     ),
-    title: 'Fertilización de precisión',
-    desc:  'Distribución de fertilizantes líquidos y granulares adaptada a cada zona del cultivo.',
-    tags:  ['Líquido + sólido', 'Dosis variable'],
+    title: 'Fertilización y esparcido agrícola',
+    desc:  'Aplicación de fertilizantes compatibles mediante sistema de pulverización o esparcido, según producto, cultivo y condiciones de trabajo.',
+    tags:  ['Líquidos compatibles', 'Esparcido controlado'],
   },
   {
     num: '03',

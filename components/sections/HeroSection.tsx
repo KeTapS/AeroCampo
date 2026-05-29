@@ -1,15 +1,14 @@
 'use client';
 
 import { ReactNode, useRef } from 'react';
-import CountUp from '@/components/ui/CountUp';
 import { useSmoothScrollProgress, phase, trap } from '@/components/ui/useScrollProgress';
 
 const WA = 'https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
 
 const STATS = [
-  { to: 10,  suffix: '×',     label: 'más rápido que un tractor' },
-  { to: 30,  suffix: '%',     label: 'menos producto fitosanitario' },
-  { to: 15,  suffix: ' ha/h', label: 'cobertura por hora de vuelo' },
+  { value: 'Planificación GPS',  label: 'rutas de aplicación controladas' },
+  { value: 'Equipo móvil',       label: 'servicio directo en finca' },
+  { value: '25–30 ha/h',         label: 'capacidad estimada de trabajo' },
 ];
 
 /* Scene windows over the whole hero scroll (0..1) — [fadeIn, full, fadeOut, end] */
@@ -91,16 +90,16 @@ export default function HeroSection() {
             border: '1px solid rgba(255,255,255,0.13)',
           }}>
             <span className="dot" />
-            Castilla y León · Pilotos AESA certificados
+            Cobertura nacional · Drones DJI · Pilotos AESA certificados
           </div>
           <h1 className="h-display" style={{ lineHeight: 1.02, color: '#fff', textShadow: '0 4px 40px rgba(0,0,0,0.6)' }}>
-            Tratamientos<br />agrícolas con<br />
+            Tratamientos agrícolas<br />con drones DJI<br />
             <em style={{
               fontFamily: 'var(--font-serif)', fontStyle: 'italic',
               color: 'var(--accent)', display: 'inline-block',
               lineHeight: 1, paddingBottom: '0.18em',
             }}>
-              drones de precisión
+              de precisión
             </em>
           </h1>
           <p className="lede" style={{
@@ -109,7 +108,7 @@ export default function HeroSection() {
             maxWidth: 460,
             marginLeft: 'auto', marginRight: 'auto',
           }}>
-            Soluciones aéreas para el agricultor moderno en Segovia, Valladolid y toda Castilla y León.
+            Soluciones aéreas para el agricultor moderno en toda España.
           </p>
         </SceneText>
 
@@ -123,22 +122,23 @@ export default function HeroSection() {
             padding: '6px 14px',
             borderRadius: 6,
             border: '1px solid rgba(255,255,255,0.12)',
-          }}>OPERACIÓN · FITOSANITARIOS</span>
+          }}>APLICACIÓN AÉREA · DRONES DJI</span>
           <h2 className="h-display" style={{ lineHeight: 1.02, color: '#fff', textShadow: '0 4px 40px rgba(0,0,0,0.75)' }}>
-            Pulverización<br />electrostática<br />
+            Pulverización agrícola<br />de precisión<br />
             <em style={{
               fontFamily: 'var(--font-serif)', fontStyle: 'italic',
               color: 'var(--accent)', display: 'inline-block', lineHeight: 1, paddingBottom: '0.14em',
-            }}>cero deriva, cero pisada</em>
+            }}>menos pisadas, más eficiencia</em>
           </h2>
           <p className="lede" style={{
             marginTop: 22,
             color: 'rgba(255,255,255,0.82)',
-            maxWidth: 520,
+            maxWidth: 560,
             marginLeft: 'auto', marginRight: 'auto',
           }}>
-            Gotas uniformes que penetran el dosel con precisión milimétrica. Tratamos entre 5 y 15 ha/h
-            sin tocar el suelo.
+            Aplicamos tratamientos agrícolas con drones DJI, reduciendo el contacto con el cultivo y
+            permitiendo trabajar en zonas donde la maquinaria pesada no puede entrar. Rendimiento
+            operativo estimado: hasta 25–30 ha/h según cultivo, producto, dosis y condiciones del terreno.
           </p>
         </SceneText>
 
@@ -173,11 +173,7 @@ export default function HeroSection() {
           <div className="hero-stats">
             {STATS.map((s, i) => (
               <div key={i} className="hero-stats__item">
-                <div className="hero-stats__num">
-                  {o3 > 0.4
-                    ? <CountUp to={s.to} suffix={s.suffix} duration={1.8} />
-                    : <span>0{s.suffix}</span>}
-                </div>
+                <div className="hero-stats__num">{s.value}</div>
                 <div className="readout hero-stats__label">{s.label}</div>
               </div>
             ))}
@@ -218,13 +214,13 @@ export default function HeroSection() {
         .hero-stats__item:last-child { border-right: 0; }
         .hero-stats__num {
           font-family: var(--font-display);
-          font-weight: 800;
-          font-size: clamp(24px, 3vw, 36px);
+          font-weight: 700;
+          font-size: clamp(14px, 1.6vw, 20px);
           color: var(--accent);
-          letter-spacing: -0.03em;
-          line-height: 1;
+          letter-spacing: -0.01em;
+          line-height: 1.2;
         }
-        .hero-stats__label { margin-top: 8px; }
+        .hero-stats__label { margin-top: 6px; }
 
         /* ── Tablet & smaller (≤ 880px) — slightly tighter ─────── */
         @media (max-width: 880px) {

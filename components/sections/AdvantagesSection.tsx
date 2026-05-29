@@ -1,16 +1,15 @@
 'use client';
 
 import { useRef } from 'react';
-import CountUp from '@/components/ui/CountUp';
 import { useSmoothScrollProgress, phase, easeOut } from '@/components/ui/useScrollProgress';
 
 const ADV = [
-  { icon: 'foot',   title: 'No pisamos el cultivo',    desc: 'El dron vuela sobre la parcela sin contacto con el suelo, eliminando daños mecánicos.' },
-  { icon: 'rain',   title: 'Acceso en terreno húmedo', desc: 'Cuando la maquinaria no puede entrar por barro, el dron opera con normalidad.' },
-  { icon: 'target', title: 'Pulverización precisa',    desc: 'Gotas uniformes que penetran el dosel con precisión milimétrica.' },
-  { icon: 'drop',   title: 'Menor gasto de producto',  desc: 'Dosis variable reduce el consumo hasta un 30%.' },
-  { icon: 'bolt',   title: 'Mayor rapidez',            desc: 'Tratamos entre 5 y 15 ha/h en los momentos críticos de campaña.' },
-  { icon: 'earth',  title: 'Sin compactación',         desc: 'Preservamos la estructura del suelo y mejoramos la salud radicular.' },
+  { icon: 'target', title: 'Aplicación dirigida',        desc: 'El dron trabaja cerca del cultivo y aplica el tratamiento de forma más localizada, reduciendo pérdidas de caldo y producto.' },
+  { icon: 'rain',   title: 'Efecto de las hélices',      desc: 'El flujo de aire generado por las hélices ayuda a empujar las gotas hacia la planta, favoreciendo una mejor deposición sobre la hoja.' },
+  { icon: 'drop',   title: 'Menos volumen de agua',      desc: 'La pulverización con dron permite trabajar con menor cantidad de caldo por hectárea, optimizando cada aplicación.' },
+  { icon: 'bolt',   title: 'Rutas GPS controladas',      desc: 'La planificación de vuelo permite mantener pasadas ordenadas y evitar solapes innecesarios en la parcela.' },
+  { icon: 'foot',   title: 'Acceso en momentos críticos', desc: 'Puede trabajar en cultivos altos, zonas complicadas o terrenos húmedos donde la maquinaria pesada no puede entrar.' },
+  { icon: 'earth',  title: 'Sin contacto con el cultivo', desc: 'El dron no pisa la parcela, evitando daños mecánicos sobre la planta y compactación del suelo.' },
 ];
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -48,10 +47,10 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 const KPIS = [
-  [30, '%',     'menos producto'],
-  [12, ' ha/h', 'cobertura/hora'],
-  [0,  '%',     'compactación'],
-  [0,  '%',     'daño mecánico'],
+  { value: 'Hasta 41%',    label: 'menos pesticida*' },
+  { value: '25–30 ha/h',   label: 'capacidad estimada' },
+  { value: 'Hasta 67,9%',  label: 'menos agua*' },
+  { value: '0%',           label: 'compactación por tractor' },
 ] as const;
 
 export default function AdvantagesSection() {
@@ -198,24 +197,23 @@ export default function AdvantagesSection() {
 
                 {/* KPI strip */}
                 <div className="adv-kpis">
-                  {KPIS.map(([val, suffix, label]) => (
-                    <div key={label} className="adv-kpis__item">
-                      <div className="adv-kpis__num">
-                        {solution > 0.5
-                          ? <CountUp to={val} suffix={suffix} duration={1.6} />
-                          : <span>0{suffix}</span>}
-                      </div>
-                      <div className="readout adv-kpis__label">{label}</div>
+                  {KPIS.map((k) => (
+                    <div key={k.label} className="adv-kpis__item">
+                      <div className="adv-kpis__num">{k.value}</div>
+                      <div className="readout adv-kpis__label">{k.label}</div>
                     </div>
                   ))}
                 </div>
 
-                <a href="#contacto" className="btn btn-primary">
-                  Solicitar demostración
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M13 5l7 7-7 7" />
-                  </svg>
-                </a>
+                {/* Nota legal */}
+                <p style={{
+                  fontSize: 10, color: 'rgba(255,255,255,0.38)',
+                  lineHeight: 1.5, marginTop: 10,
+                  fontFamily: 'var(--font-mono)', letterSpacing: '0.02em',
+                }}>
+                  *Datos orientativos según estudios comparativos y condiciones de aplicación.
+                  Los resultados pueden variar según cultivo, producto, dosis, clima y terreno.
+                </p>
               </div>
 
               {/* RIGHT — 6 advantage cards stagger-revealed */}

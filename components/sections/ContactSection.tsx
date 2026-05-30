@@ -41,17 +41,34 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
 }
 
 export default function ContactSection() {
-  const [sent, setSent] = useState(false);
+  const [sent,    setSent]    = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error,   setError]   = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (FORMSPREE_ID === 'TU_FORM_ID_AQUI') { setSent(true); return; }
-    const form = e.currentTarget;
-    const data = new FormData(form);
-    const res  = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-      method: 'POST', body: data, headers: { Accept: 'application/json' },
-    });
-    if (res.ok) setSent(true);
+    setError(false);
+
+    // Formspree not configured yet → warn in console, don't fake success
+    if (FORMSPREE_ID === 'TU_FORM_ID_AQUI') {
+      console.warn('[Contacto] FORMSPREE_ID sin configurar: el mensaje NO se envía.');
+      setError(true);
+      return;
+    }
+
+    const data = new FormData(e.currentTarget);
+    setSending(true);
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST', body: data, headers: { Accept: 'application/json' },
+      });
+      if (res.ok) setSent(true);
+      else        setError(true);
+    } catch {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -114,6 +131,8 @@ export default function ContactSection() {
               ) : (
                 <>
                   <div className="con-form__body">
+                    {/* Formspree: asunto del email + responder-a automático */}
+                    <input type="hidden" name="_subject" value="Nueva solicitud de presupuesto · AeroCampo Iberia" />
                     {FIELDS.map((f) => (
                       <Field
                         key={f.key}
@@ -135,11 +154,16 @@ export default function ContactSection() {
                         autoComplete="off"
                       />
                     </FieldGroup>
+                    {error && (
+                      <p className="con-error">
+                        No se pudo enviar. Inténtalo de nuevo o escríbenos por WhatsApp.
+                      </p>
+                    )}
                   </div>
 
                   <div className="con-form__foot">
-                    <button type="submit" className="btn btn-primary con-submit">
-                      Enviar solicitud <Icon name="arrow" size={14} />
+                    <button type="submit" className="btn btn-primary con-submit" disabled={sending}>
+                      {sending ? 'Enviando…' : <>Enviar solicitud <Icon name="arrow" size={14} /></>}
                     </button>
                   </div>
                 </>
@@ -267,6 +291,17 @@ export default function ContactSection() {
           width: 100%;
           justify-content: center;
           padding-top: 14px; padding-bottom: 14px;
+        }
+        .con-submit:disabled { opacity: 0.6; cursor: progress; }
+
+        .con-error {
+          font-size: 13px;
+          color: #ff8d7a;
+          background: rgba(255,80,60,0.08);
+          border: 1px solid rgba(255,80,60,0.25);
+          border-radius: 8px;
+          padding: 10px 12px;
+          line-height: 1.45;
         }
 
         /* ─── Success state ───────────────────────────────── */

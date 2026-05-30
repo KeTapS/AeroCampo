@@ -14,6 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://aerocampo.es"),
   title: "AeroCampo Iberia",
   description:
     "Tratamientos agrícolas con drones DJI en toda España. Aplicación aérea de fitosanitarios, fertilización y esparcido de precisión. Pilotos AESA certificados.",
@@ -30,9 +31,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "AeroCampo Iberia" }],
   creator: "AeroCampo Iberia",
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "es_ES",
+    url: "https://aerocampo.es",
     title: "AeroCampo Iberia | Drones Agrícolas de Precisión",
     description:
       "Tratamientos agrícolas con drones DJI en toda España. Precisión, rapidez y sin pisar el cultivo.",
@@ -50,6 +53,7 @@ const schemaOrg = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "AeroCampo Iberia",
+  url: "https://aerocampo.es",
   description:
     "Tratamientos agrícolas con drones DJI: aplicación aérea de fitosanitarios, fertilización y esparcido de precisión.",
   areaServed: { "@type": "Country", name: "España" },

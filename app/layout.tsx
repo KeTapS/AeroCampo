@@ -40,11 +40,20 @@ export const metadata: Metadata = {
     description:
       "Tratamientos agrícolas con drones DJI en toda España. Precisión, rapidez y sin pisar el cultivo.",
     siteName: "AeroCampo Iberia",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "AeroCampo Iberia — Tratamientos agrícolas con drones de precisión",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AeroCampo Iberia | Drones Agrícolas",
     description: "Tratamientos agrícolas con drones DJI en toda España.",
+    images: ["/og.jpg"],
   },
   robots: { index: true, follow: true },
 };

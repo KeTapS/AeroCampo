@@ -3,12 +3,11 @@
 import { ReactNode, useState } from 'react';
 import FadeIn from '@/components/ui/FadeIn';
 
-const PHONE        = '+34 615 325 317';
-const TEL          = 'tel:+34615325317';
-const WA           = 'https://wa.me/34615325317?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
-const EMAIL        = 'aerocampoiberia@gmail.com';
-const MAILTO       = 'mailto:aerocampoiberia@gmail.com';
-const FORMSPREE_ID = 'TU_FORM_ID_AQUI';
+const PHONE  = '+34 615 325 317';
+const TEL    = 'tel:+34615325317';
+const WA     = 'https://wa.me/34615325317?text=Hola%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20vuestros%20servicios.';
+const EMAIL  = 'aerocampoiberia@gmail.com';
+const MAILTO = 'mailto:aerocampoiberia@gmail.com';
 
 const CONTACTS = [
   { icon: 'phone', label: 'Teléfono', value: PHONE,  href: TEL },
@@ -49,19 +48,11 @@ export default function ContactSection() {
     e.preventDefault();
     setError(false);
 
-    // Formspree not configured yet → warn in console, don't fake success
-    if (FORMSPREE_ID === 'TU_FORM_ID_AQUI') {
-      console.warn('[Contacto] FORMSPREE_ID sin configurar: el mensaje NO se envía.');
-      setError(true);
-      return;
-    }
-
     const data = new FormData(e.currentTarget);
     setSending(true);
     try {
-      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-        method: 'POST', body: data, headers: { Accept: 'application/json' },
-      });
+      // Posts to our own Worker route — sends the email via Cloudflare.
+      const res = await fetch('/api/contact', { method: 'POST', body: data });
       if (res.ok) setSent(true);
       else        setError(true);
     } catch {
@@ -131,8 +122,15 @@ export default function ContactSection() {
               ) : (
                 <>
                   <div className="con-form__body">
-                    {/* Formspree: asunto del email + responder-a automático */}
-                    <input type="hidden" name="_subject" value="Nueva solicitud de presupuesto · AeroCampo Iberia" />
+                    {/* Honeypot anti-spam: oculto para humanos, los bots lo rellenan */}
+                    <input
+                      type="text"
+                      name="_gotcha"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+                    />
                     {FIELDS.map((f) => (
                       <Field
                         key={f.key}

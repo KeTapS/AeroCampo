@@ -13,8 +13,8 @@ import { createMimeMessage } from 'mimetext';
  *    destination address
  */
 
-const FROM = 'formulario@aerocampo.es';      // any address @ your verified zone
-const TO   = 'aerocampoiberia@gmail.com';    // matches destination_address in wrangler
+const FROM = 'contacto@aerocampo.es';         // verified custom address on the zone
+const TO   = 'aerocampoiberia@gmail.com';     // matches destination_address in wrangler
 
 interface SendEmailBinding {
   send(message: unknown): Promise<void>;

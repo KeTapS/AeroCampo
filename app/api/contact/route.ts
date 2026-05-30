@@ -63,9 +63,17 @@ export async function POST(req: Request): Promise<Response> {
       ].join('\n'),
     });
 
-    // Cloudflare email runtime module — dynamic import so `next build`
-    // doesn't try to resolve it in Node during the build step.
-    const { EmailMessage } = await import('cloudflare:email');
+    // `cloudflare:email` is a workerd runtime built-in. Bundlers (Turbopack
+    // and OpenNext's esbuild) must NOT try to resolve it at build time, or
+    // the Cloudflare build fails with "Could not resolve cloudflare:email".
+    // Decoding the specifier with atob() at runtime defeats their static
+    // analysis (a plain join()/array is constant-folded back to a literal),
+    // so it stays a dynamic import that workerd resolves natively.
+    const emailModule = atob('Y2xvdWRmbGFyZTplbWFpbA=='); // -> "cloudflare:email"
+    const { EmailMessage } = (await import(
+      /* webpackIgnore: true */ /* turbopackIgnore: true */ emailModule
+    )) as typeof import('cloudflare:email');
+
     const env = getCloudflareContext().env as unknown as { CONTACT_EMAIL: SendEmailBinding };
 
     const message = new EmailMessage(FROM, TO, msg.asRaw());

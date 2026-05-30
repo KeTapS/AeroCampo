@@ -1,5 +1,5 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
-import { createMimeMessage } from 'mimetext';
+import { createMimeMessage, Mailbox } from 'mimetext';
 
 /**
  * Contact form endpoint.
@@ -46,7 +46,9 @@ export async function POST(req: Request): Promise<Response> {
     const msg = createMimeMessage();
     msg.setSender({ name: 'Web AeroCampo', addr: FROM });
     msg.setRecipient(TO);
-    msg.setHeader('Reply-To', email);   // reply goes straight to the lead
+    // Reply-To must be a Mailbox object (a plain string is rejected by
+    // mimetext because "Reply-To" isn't one of its address header types).
+    msg.setHeader('Reply-To', new Mailbox(email));   // reply goes to the lead
     msg.setSubject('Nueva solicitud de presupuesto · AeroCampo Iberia');
     msg.addMessage({
       contentType: 'text/plain',

@@ -1,28 +1,38 @@
 'use client';
 
-const COLS = [
+import { usePathname } from 'next/navigation';
+
+type Item = readonly [label: string, href: string];
+
+const COLS: readonly (readonly [string, readonly Item[]])[] = [
   ['Servicios', [
-    ['Tratamientos', '#servicios'],
+    ['Tratamientos',  '#servicios'],
     ['Fertilización', '#servicios'],
-    ['Vídeo aéreo', '#servicios'],
+    ['Vídeo aéreo',   '#servicios'],
   ]],
   ['Empresa', [
-    ['Nosotros', '#nosotros'],
+    ['Nosotros',  '#nosotros'],
     ['Cobertura', '#cobertura'],
-    ['Contacto', '#contacto'],
+    ['Contacto',  '#contacto'],
   ]],
   ['Legal', [
-    ['Aviso legal', '#'],
-    ['Privacidad', '#'],
-    ['AESA · STS-ES', '#'],
+    ['Aviso legal',    '/aviso-legal'],
+    ['Privacidad',     '/privacidad'],
+    ['AESA · STS-ES',  'https://www.seguridadaerea.gob.es'],
   ]],
-] as const;
+];
 
 export default function Footer() {
-  function scrollTo(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
-    if (href === '#') return;          // legal links — no target yet
-    e.preventDefault();
-    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const pathname = usePathname();
+  const onHome = pathname === '/';
+
+  function onSectionClick(e: React.MouseEvent<HTMLAnchorElement>, hash: string) {
+    // On the home page, smooth-scroll to the section. On any other page
+    // (e.g. /aviso-legal) the href is "/#section", so let it navigate home.
+    if (onHome) {
+      e.preventDefault();
+      document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   return (
@@ -56,17 +66,26 @@ export default function Footer() {
                 {title.toUpperCase()}
               </div>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
-                {items.map(([label, href]) => (
-                  <li key={label}>
-                    <a href={href}
-                      onClick={(e) => scrollTo(e, href)}
-                      style={{ fontSize: 13, color: 'var(--text-dim)', transition: 'color 0.2s' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-mut)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-dim)')}>
-                      {label}
-                    </a>
-                  </li>
-                ))}
+                {items.map(([label, href]) => {
+                  const isSection  = href.startsWith('#');
+                  const isExternal = href.startsWith('http');
+                  // Section links: "#x" on home, "/#x" elsewhere (navigate home + anchor)
+                  const finalHref = isSection ? (onHome ? href : `/${href}`) : href;
+                  return (
+                    <li key={label}>
+                      <a
+                        href={finalHref}
+                        onClick={isSection ? (e) => onSectionClick(e, href) : undefined}
+                        target={isExternal ? '_blank' : undefined}
+                        rel={isExternal ? 'noopener noreferrer' : undefined}
+                        style={{ fontSize: 13, color: 'var(--text-dim)', transition: 'color 0.2s' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-mut)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-dim)')}>
+                        {label}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -106,7 +125,6 @@ export default function Footer() {
           .foot-grid ul {
             align-items: center;
           }
-          /* Bottom bar: stack and center copyright + location */
           footer .wrap > div:last-child {
             flex-direction: column;
             justify-content: center !important;

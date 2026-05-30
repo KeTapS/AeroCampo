@@ -53,8 +53,13 @@ export default function ContactSection() {
     try {
       // Posts to our own Worker route — sends the email via Cloudflare.
       const res = await fetch('/api/contact', { method: 'POST', body: data });
-      if (res.ok) setSent(true);
-      else        setError(true);
+      if (res.ok) {
+        setSent(true);
+      } else {
+        const body = await res.json().catch(() => null);
+        console.error('[Contacto] error del servidor:', body);   // TEMP debug
+        setError(true);
+      }
     } catch {
       setError(true);
     } finally {

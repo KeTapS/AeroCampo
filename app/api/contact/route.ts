@@ -84,11 +84,6 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ ok: true });
   } catch (err) {
     console.error('[/api/contact] send failed:', err);
-    // TEMP debug: surface the real error to the client so we can diagnose
-    // without the Cloudflare log UI. Remove once email is confirmed working.
-    return Response.json(
-      { ok: false, error: 'No se pudo enviar.', detail: err instanceof Error ? `${err.name}: ${err.message}` : String(err) },
-      { status: 500 },
-    );
+    return Response.json({ ok: false, error: 'No se pudo enviar.' }, { status: 500 });
   }
 }

@@ -53,13 +53,8 @@ export default function ContactSection() {
     try {
       // Posts to our own Worker route — sends the email via Cloudflare.
       const res = await fetch('/api/contact', { method: 'POST', body: data });
-      if (res.ok) {
-        setSent(true);
-      } else {
-        const body = await res.json().catch(() => null);
-        console.error('[Contacto] error del servidor:', body);   // TEMP debug
-        setError(true);
-      }
+      if (res.ok) setSent(true);
+      else        setError(true);
     } catch {
       setError(true);
     } finally {
@@ -157,6 +152,17 @@ export default function ContactSection() {
                         autoComplete="off"
                       />
                     </FieldGroup>
+
+                    <label className="con-consent">
+                      <input type="checkbox" name="consentimiento" required />
+                      <span>
+                        He leído y acepto la{' '}
+                        <a href="/privacidad" target="_blank" rel="noopener noreferrer">
+                          política de privacidad
+                        </a>.
+                      </span>
+                    </label>
+
                     {error && (
                       <p className="con-error">
                         No se pudo enviar. Inténtalo de nuevo o escríbenos por WhatsApp.
@@ -305,6 +311,30 @@ export default function ContactSection() {
           border-radius: 8px;
           padding: 10px 12px;
           line-height: 1.45;
+        }
+
+        /* ─── Privacy consent ─────────────────────────────── */
+        .con-consent {
+          display: flex;
+          align-items: flex-start;
+          gap: 9px;
+          font-size: 12.5px;
+          line-height: 1.5;
+          color: var(--text-mut);
+          cursor: pointer;
+          margin-top: 2px;
+        }
+        .con-consent input {
+          width: 17px; height: 17px;
+          margin-top: 1px;
+          flex-shrink: 0;
+          accent-color: var(--accent);
+          cursor: pointer;
+        }
+        .con-consent a {
+          color: var(--accent);
+          text-decoration: underline;
+          text-underline-offset: 2px;
         }
 
         /* ─── Success state ───────────────────────────────── */

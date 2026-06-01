@@ -21,9 +21,9 @@ export default function PrivacidadPage() {
       <h2>1. Responsable del tratamiento</h2>
       <table>
         <tbody>
-          <tr><td>Responsable</td><td><PH>Razón social o nombre y apellidos</PH></td></tr>
-          <tr><td>NIF / CIF</td><td><PH>00000000X</PH></td></tr>
-          <tr><td>Domicilio</td><td><PH>Calle, número, código postal, localidad</PH></td></tr>
+          <tr><td>Responsable</td><td>AEROCAMPO IBERIA, S.L.</td></tr>
+          <tr><td>NIF / CIF</td><td>B88737929</td></tr>
+          <tr><td>Domicilio</td><td>Carretera de Cuéllar, nº 12, 40297 Sanchonuño, Segovia</td></tr>
           <tr><td>Correo electrónico</td><td>aerocampoiberia@gmail.com</td></tr>
           <tr><td>Teléfono</td><td>+34 615 325 317</td></tr>
         </tbody>

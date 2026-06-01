@@ -20,14 +20,14 @@ export default function AvisoLegalPage() {
       </p>
       <table>
         <tbody>
-          <tr><td>Titular</td><td><PH>Razón social o nombre y apellidos</PH></td></tr>
-          <tr><td>NIF / CIF</td><td><PH>00000000X</PH></td></tr>
-          <tr><td>Domicilio</td><td><PH>Calle, número, código postal, localidad, provincia</PH></td></tr>
+          <tr><td>Titular</td><td>AEROCAMPO IBERIA, S.L.</td></tr>
+          <tr><td>NIF / CIF</td><td>B88737929</td></tr>
+          <tr><td>Domicilio</td><td>Carretera de Cuéllar, nº 12, 40297 Sanchonuño, Segovia</td></tr>
           <tr><td>Nombre comercial</td><td>AeroCampo Iberia</td></tr>
           <tr><td>Correo electrónico</td><td>aerocampoiberia@gmail.com</td></tr>
           <tr><td>Teléfono</td><td>+34 615 325 317</td></tr>
           <tr><td>Sitio web</td><td>https://aerocampo.es</td></tr>
-          <tr><td>Datos registrales</td><td><PH>Si procede: Registro Mercantil, tomo, folio, hoja</PH></td></tr>
+          <tr><td>Datos registrales</td><td><PH>Pendiente de inscripción en el Registro Mercantil</PH></td></tr>
         </tbody>
       </table>
 
@@ -88,8 +88,8 @@ export default function AvisoLegalPage() {
       <h2>8. Legislación aplicable y jurisdicción</h2>
       <p>
         Este aviso legal se rige por la legislación española. Para la resolución de cualquier
-        controversia, las partes se someten a los juzgados y tribunales de{' '}
-        <PH>localidad</PH>, salvo que la normativa aplicable disponga otro fuero.
+        controversia, las partes se someten a los juzgados y tribunales de Segovia, salvo que la
+        normativa aplicable disponga otro fuero.
       </p>
     </LegalPage>
   );

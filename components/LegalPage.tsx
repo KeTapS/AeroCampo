@@ -30,9 +30,9 @@ export default function LegalPage({
           {updated && <p className="legal-updated">Última actualización: {updated}</p>}
 
           <div className="legal-disclaimer">
-            <strong>Documento de ejemplo.</strong> Los datos entre corchetes <code>[ … ]</code> son
-            de muestra: deben sustituirse por los datos reales de la empresa y conviene que un
-            asesor legal revise el texto antes de publicarlo.
+            <strong>Borrador.</strong> Los campos entre corchetes <code>[ … ]</code> están pendientes
+            de completar. Conviene que un asesor legal revise el texto antes de su publicación
+            definitiva.
           </div>
 
           <div className="legal-body">{children}</div>

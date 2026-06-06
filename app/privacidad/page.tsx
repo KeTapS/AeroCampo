@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import LegalPage from '@/components/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Política de Privacidad · AeroCampo Iberia',
+  title: 'Política de Privacidad',
   description: 'Política de privacidad y tratamiento de datos personales de AeroCampo Iberia.',
   robots: { index: false, follow: true },   // draft content — don't index until real data is in
 };

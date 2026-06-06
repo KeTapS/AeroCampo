@@ -1,8 +1,32 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import FadeIn from '@/components/ui/FadeIn';
 
 export default function AboutSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Lazy-load the video: don't fetch the 3 MB file until the section is
+  // about to be on screen. Keeps it out of the initial page payload
+  // without touching the video's quality.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const root = document.getElementById('scroll-root');
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.load();
+          video.play().catch(() => {});
+          io.disconnect();
+        }
+      },
+      { root, threshold: 0.2 },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section
       id="nosotros"
@@ -51,17 +75,21 @@ export default function AboutSection() {
                 boxShadow: '0 24px 60px -20px color-mix(in oklch, var(--accent) 40%, transparent)',
                 backgroundColor: '#000',
               }}>
-                {/* Video element */}
+                {/* Video element — loaded lazily via IntersectionObserver */}
                 <video
-                  autoPlay
+                  ref={videoRef}
                   muted
                   loop
                   playsInline
+                  preload="none"
+                  width={1280}
+                  height={720}
                   style={{
                     width: '100%',
                     height: 'auto',
                     display: 'block',
                     backgroundColor: '#000',
+                    aspectRatio: '16 / 9',
                   }}
                 >
                   <source src="/videos/dron.mp4" type="video/mp4" />

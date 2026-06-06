@@ -19,9 +19,9 @@ const SCENES = {
 };
 
 const BGS = [
-  { src: '/images/hero-field.jpg',     window: SCENES.s1, pos: 'center 60%', zoomFrom: 1.00, zoomTo: 1.15 },
-  { src: '/images/fitosanitarios.jpg', window: SCENES.s2, pos: 'center 50%', zoomFrom: 1.10, zoomTo: 1.00 },
-  { src: '/images/dron-atardecer.jpg', window: SCENES.s3, pos: 'center 55%', zoomFrom: 1.05, zoomTo: 1.15 },
+  { src: '/images/hero-field.webp',     window: SCENES.s1, pos: 'center 60%', zoomFrom: 1.00, zoomTo: 1.15 },
+  { src: '/images/fitosanitarios.webp', window: SCENES.s2, pos: 'center 50%', zoomFrom: 1.10, zoomTo: 1.00 },
+  { src: '/images/dron-atardecer.webp', window: SCENES.s3, pos: 'center 55%', zoomFrom: 1.05, zoomTo: 1.15 },
 ];
 
 export default function HeroSection() {

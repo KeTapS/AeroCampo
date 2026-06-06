@@ -57,7 +57,7 @@ export default function Header() {
     >
       <div className="wrap site-header__inner">
         <a href="#inicio" className="site-header__brand" aria-label="AeroCampo Iberia — inicio">
-          <img src="/logo.webp" alt="AeroCampo Iberia" />
+          <img src="/logo-sm.webp" alt="AeroCampo Iberia" width={77} height={56} />
         </a>
 
         <nav className="nav-desktop" aria-label="Navegación principal">

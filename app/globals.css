@@ -1,15 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 
+/* Fonts are loaded via next/font (self-hosted, no render-blocking request).
+   The --font-geist* variables are injected on <html> by app/layout.tsx. */
 @theme inline {
   --color-primary:       #1f7a3a;
   --color-accent:        #7dd35b;
   --color-accent-2:      #4dd4e1;
   --color-bg:            #06090a;
   --color-text:          #eef3ee;
-  --font-display:        'Geist', system-ui, sans-serif;
-  --font-mono:           'Geist Mono', ui-monospace, monospace;
-  --font-serif:          'Instrument Serif', Georgia, serif;
+  --font-display:        var(--font-geist), system-ui, sans-serif;
+  --font-mono:           var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif:          var(--font-instrument), Georgia, serif;
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -45,10 +46,10 @@
   --radius:    12px;
   --radius-lg: 18px;
 
-  --font-display: 'Geist', system-ui, sans-serif;
-  --font-body:    'Geist', system-ui, sans-serif;
-  --font-mono:    'Geist Mono', ui-monospace, monospace;
-  --font-serif:   'Instrument Serif', Georgia, serif;
+  --font-display: var(--font-geist), system-ui, sans-serif;
+  --font-body:    var(--font-geist), system-ui, sans-serif;
+  --font-mono:    var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif:   var(--font-instrument), Georgia, serif;
 
   /* Safe-area: read env() once at root so children just consume the var */
   --safe-top:    env(safe-area-inset-top, 0px);

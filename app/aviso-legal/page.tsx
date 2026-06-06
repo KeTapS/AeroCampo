@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import LegalPage from '@/components/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Aviso Legal · AeroCampo Iberia',
+  title: 'Aviso Legal',
   description: 'Aviso legal y condiciones de uso del sitio web de AeroCampo Iberia.',
   robots: { index: false, follow: true },   // draft content — don't index until real data is in
 };

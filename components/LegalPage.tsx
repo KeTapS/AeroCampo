@@ -18,7 +18,7 @@ export default function LegalPage({
       <header className="legal-header">
         <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" aria-label="AeroCampo Iberia — inicio">
-            <img src="/logo.webp" alt="AeroCampo Iberia" style={{ height: 48, width: 'auto', display: 'block' }} />
+            <img src="/logo-sm.webp" alt="AeroCampo Iberia" width={66} height={48} style={{ height: 48, width: 'auto', display: 'block' }} />
           </Link>
           <Link href="/" className="legal-back">← Volver al inicio</Link>
         </div>

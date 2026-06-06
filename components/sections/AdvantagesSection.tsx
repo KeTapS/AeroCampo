@@ -100,7 +100,7 @@ export default function AdvantagesSection() {
         {/* ── Background image with clip-path expansion ── */}
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: 'url(/images/tractor-mud.jpg)',
+          backgroundImage: 'url(/images/tractor-mud.webp)',
           backgroundSize: 'cover',
           backgroundPosition: 'center 45%',
           clipPath: `inset(${inset}% ${inset}% ${inset}% ${inset}% round ${radius}px)`,

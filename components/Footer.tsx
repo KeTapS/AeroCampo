@@ -49,8 +49,10 @@ export default function Footer() {
           {/* Brand */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
             <img
-              src="/logo.webp"
+              src="/logo-sm.webp"
               alt="AeroCampo Iberia"
+              width={77}
+              height={56}
               style={{ height: 56, width: 'auto', marginBottom: 10 }}
             />
             <p style={{ fontSize: 12.5, color: 'var(--text-dim)', lineHeight: 1.55 }}>
